@@ -1,0 +1,10 @@
+@import './base.css';
+
+#app {
+  height: 100%;
+}
+
+.w-1200-center {
+  max-width: 1200px;
+  margin: 0 auto;
+}
