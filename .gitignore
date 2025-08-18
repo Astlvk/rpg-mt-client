@@ -15,7 +15,6 @@ coverage
 *.local
 auto-imports.d.ts
 components.d.ts
-env.d.ts
 
 /cypress/videos/
 /cypress/screenshots/
