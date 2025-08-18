@@ -1,14 +1,14 @@
 import { ref } from 'vue'
-import type { Session } from '@/schema/db'
+import type { Session } from '@/schema/chat'
 
-const curChatSession = ref<Session | null>(null)
+const curSession = ref<Session | null>(null)
 
-function setCurChatSession(session: Session) {
-  curChatSession.value = session
+function setCurSession(session: Session) {
+  curSession.value = session
 }
 
-function getCurChatSession() {
-  return curChatSession.value
+function getCurSession() {
+  return curSession
 }
 
-export { setCurChatSession, getCurChatSession }
+export { setCurSession, getCurSession }

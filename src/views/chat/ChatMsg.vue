@@ -1,69 +1,111 @@
 <template>
-  <div
-    class="message-item"
-    :class="{ 'message-user': message.type === 'user', 'message-bot': message.type === 'bot' }"
-  >
-    <div class="message-avatar">
-      <el-avatar :size="36" :src="avatarSrc">
-        <el-icon v-if="message.type === 'user'"><User /></el-icon>
-        <el-icon v-else><Service /></el-icon>
-      </el-avatar>
-    </div>
+  <div class="chat-msg" ref="msgContainer">
+    <div
+      v-for="msg in messages"
+      :key="msg.id"
+      class="msg-item"
+      :class="{ 'msg-user': msg.role === Role.USER, 'msg-bot': msg.role === Role.AI }"
+    >
+      <div class="msg-avatar">
+        <el-avatar :size="36">
+          <el-icon v-if="msg.role === Role.USER"><User /></el-icon>
+          <el-icon v-else><Service /></el-icon>
+        </el-avatar>
+      </div>
 
-    <div class="message-content">
-      <div class="message-text">{{ message.content }}</div>
-      <div class="message-time">{{ message.time }}</div>
+      <div class="msg-content">
+        <div class="msg-text">
+          <v-md-preview :text="msg.content" />
+        </div>
+        <div class="msg-time">{{ dayjs(msg.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
+import dayjs from 'dayjs'
+import { Role } from '@/schema/chat'
+import { useMessagesRepo } from '@/db/useMessagesRepo'
+import { getCurSession } from './service/workspace'
 import { User, Service } from '@element-plus/icons-vue'
 
-const props = defineProps({
-  message: {
-    type: Object,
-    required: true,
-  },
-  userAvatar: {
-    type: String,
-    default: '',
-  },
-  botAvatar: {
-    type: String,
-    default: '',
-  },
-})
+const msgContainer = ref<HTMLElement | null>(null)
+const curSession = getCurSession()
+const { getMessagesBySessionIdObservable } = useMessagesRepo()
+// 函数返回的是一个ref对象，所以使用的时候需要主动.value，包装为computed只是为了响应式切换
+const messagesWrap = computed(() => getMessagesBySessionIdObservable(curSession.value?.id))
+// 主动解包一层
+const messages = computed(() => messagesWrap.value.value)
 
-const avatarSrc = computed(() => {
-  return props.message.type === 'user' ? props.userAvatar : props.botAvatar
-})
+watch(
+  () => messages.value,
+  () => {
+    nextTick(() => {
+      scrollToBottom()
+    })
+  },
+)
+
+function scrollToBottom() {
+  if (msgContainer.value) {
+    msgContainer.value.scrollTop = msgContainer.value.scrollHeight
+  }
+}
 </script>
 
 <style lang="postcss" scoped>
-.message-item {
+.chat-msg {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #fafafa;
+}
+
+/* 滚动条样式 */
+.chat-msg::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-msg::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.chat-msg::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.chat-msg::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.msg-item {
   display: flex;
   margin-bottom: 20px;
 
-  &.message-user {
+  &.msg-user {
     flex-direction: row-reverse;
 
-    .message-content {
+    .msg-content {
       margin-left: 0;
       margin-right: 12px;
       align-items: flex-end;
     }
 
-    .message-text {
+    .msg-text {
       background-color: #409eff;
-      color: #fff;
       border-radius: 18px 18px 4px 18px;
+
+      :deep(.vuepress-markdown-body) {
+        color: #fff;
+      }
     }
   }
 
-  &.message-bot {
-    .message-text {
+  &.msg-bot {
+    .msg-text {
       background-color: #fff;
       color: #303133;
       border-radius: 18px 18px 18px 4px;
@@ -72,26 +114,33 @@ const avatarSrc = computed(() => {
   }
 }
 
-.message-avatar {
+.msg-avatar {
   flex-shrink: 0;
 }
 
-.message-content {
+.msg-content {
   margin-left: 12px;
   display: flex;
   flex-direction: column;
   max-width: 70%;
+
+  :deep(.vuepress-markdown-body) {
+    padding: 0;
+    font-size: 14px;
+    background-color: transparent;
+  }
 }
 
-.message-text {
+.msg-text {
   padding: 12px 16px;
+  /* padding: 12px 16px;
   font-size: 14px;
   line-height: 1.5;
   word-wrap: break-word;
-  white-space: pre-wrap;
+  white-space: pre-wrap; */
 }
 
-.message-time {
+.msg-time {
   font-size: 11px;
   color: #c0c4cc;
   margin-top: 4px;

@@ -7,6 +7,7 @@
 
     <div class="default-size">
       <el-input
+        v-model="inputPrompt"
         :rows="8"
         type="textarea"
         resize="none"
@@ -14,12 +15,14 @@
         @keydown="handleKeydown"
       />
       <div class="btn">
+        <el-button color="rgba(51, 97, 255, 1)" :icon="Position" @click="sendTest"> AI </el-button>
         <el-button color="rgba(51, 97, 255, 1)" :icon="Position" @click="sendMsg"> 发送 </el-button>
       </div>
     </div>
 
     <div class="small-size">
       <el-input
+        v-model="inputPrompt"
         :rows="4"
         type="textarea"
         resize="none"
@@ -39,10 +42,14 @@
 import { ref } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useMessagesRepo } from '@/db/useMessagesRepo'
+import { getCurSession } from './service/workspace'
 
+const curSession = getCurSession()
 const inputPrompt = ref('')
+const { addMessage, buildAiMessage, buildUserMessage } = useMessagesRepo()
 
-function handleKeydown(e) {
+function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Enter') {
     if (e.shiftKey || e.ctrlKey) {
       e.preventDefault()
@@ -54,11 +61,24 @@ function handleKeydown(e) {
   }
 }
 
+async function sendTest() {
+  if (inputPrompt.value.trim() === '') {
+    ElMessage.warning('请输入内容')
+  } else {
+    const message = buildAiMessage(curSession.value!.id, 0, inputPrompt.value)
+    await addMessage(message)
+    console.log(inputPrompt.value)
+    inputPrompt.value = ''
+  }
+}
+
 async function sendMsg() {
   if (inputPrompt.value.trim() === '') {
     ElMessage.warning('请输入内容')
   } else {
-    // chat(inputPrompt.value)
+    const message = buildUserMessage(curSession.value!.id, 0, inputPrompt.value)
+    await addMessage(message)
+    console.log(inputPrompt.value)
     inputPrompt.value = ''
   }
 }

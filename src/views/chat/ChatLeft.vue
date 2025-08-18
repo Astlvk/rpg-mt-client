@@ -2,16 +2,16 @@
   <div class="chat-left">
     <div class="sidebar-header">
       <h2>RPG-MT</h2>
-      <el-button type="primary" :icon="Plus" @click="createNewChat"> 新的世界 </el-button>
+      <el-button type="primary" :icon="Plus" @click="handleCreateSession"> 新的世界 </el-button>
     </div>
 
     <div class="chat-list">
       <div
-        v-for="chat in sessions"
+        v-for="chat in [...(sessions || [])].reverse()"
         :key="chat.id"
         class="chat-item"
-        :class="{ active: currentChatId === chat.id }"
-        @click="selectChat(chat.id)"
+        :class="{ active: curSession?.id === chat.id }"
+        @click="handleSelectSession(chat)"
       >
         <div class="chat-avatar">
           <el-avatar :size="40" :src="chat.avatar">
@@ -21,55 +21,88 @@
 
         <div class="chat-info">
           <div class="chat-title">{{ chat.title }}</div>
-          <div class="chat-preview">{{ chat.lastMessage }}</div>
-          <div class="chat-time">{{ chat.lastTime }}</div>
+          <div class="chat-preview">{{ chat.lastMsg }}</div>
+          <div class="chat-time">{{ dayjs(chat.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</div>
         </div>
+        <el-button type="danger" :icon="Delete" size="small" @click.stop="handleDel(chat.id)" />
       </div>
+
+      <el-empty description="暂无世界" v-if="sessions?.length === 0" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Session } from '@/schema/chat'
 import { onMounted } from 'vue'
-import { Plus, ChatDotRound } from '@element-plus/icons-vue'
-import { useSessionsRepo } from '@/db/useSessionsRepo'
+import dayjs from 'dayjs'
 import { getUUID } from '@/utils'
-import { setCurChatSession } from './service/workspace'
-
-const emit = defineEmits(['select-chat', 'create-chat'])
+import { useSessionsRepo } from '@/db/useSessionsRepo'
+import { setCurSession, getCurSession } from './service/workspace'
+import { ElMessageBox } from 'element-plus'
+import { Plus, ChatDotRound, Delete } from '@element-plus/icons-vue'
 
 onMounted(() => {
   init()
 })
 
-const { sessions, addSession, getSessions } = useSessionsRepo()
-
-init()
+const curSession = getCurSession()
+const { sessions, getSessionCount, getSessionByIndex, addSession, deleteSession } =
+  useSessionsRepo()
 
 async function init() {
-  const sessionList = await getSessions()
-  console.log('sessionList', sessionList)
+  const count = await getSessionCount()
+
   // 初始化，不存在则创建
-  if (sessionList.length === 0) {
-    const newSession = {
-      id: getUUID(),
-      title: '新的世界',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+  if (count === 0) {
+    const newSession = buildNewSession()
+    await addSession(newSession)
+    setCurSession(newSession)
+  }
+
+  if (count > 0) {
+    const session = await getSessionByIndex(count - 1)
+    if (session) {
+      setCurSession(session)
     }
-    addSession(newSession)
-    setCurChatSession(newSession)
-  } else {
-    setCurChatSession(sessionList[0])
   }
 }
 
-function selectChat(chatId: string) {
-  emit('select-chat', chatId)
+// 选择会话
+function handleSelectSession(session: Session) {
+  setCurSession(session)
 }
 
-function createNewChat() {
-  emit('create-chat')
+// 创建会话
+function handleCreateSession() {
+  const newSession = buildNewSession()
+  addSession(newSession)
+}
+
+// 删除会话
+function handleDel(chatId: string) {
+  ElMessageBox.confirm('确认删除该会话吗？', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning',
+    customStyle: {
+      position: 'relative',
+      top: '-10%',
+    },
+  }).then(() => {
+    deleteSession(chatId)
+  })
+}
+
+// 构建新会话对象
+function buildNewSession() {
+  const newSession = {
+    id: getUUID(),
+    title: '新的世界',
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }
+  return newSession
 }
 </script>
 

@@ -8,7 +8,7 @@
       <!-- 聊天头部 -->
       <div class="chat-header">
         <div class="chat-title">
-          <h2>{{ currentChat?.title || '选择会话开始聊天' }}</h2>
+          <h2>{{ curSession?.title || '选择会话开始聊天' }}</h2>
         </div>
 
         <div class="chat-actions">
@@ -23,15 +23,7 @@
         </div>
       </div>
 
-      <div class="chat-messages" ref="messagesContainer">
-        <!-- <ChatMsg
-          v-for="message in currentMessages"
-          :key="message.id"
-          :message="message"
-          :user-avatar="userAvatar"
-          :bot-avatar="botAvatar"
-        /> -->
-      </div>
+      <ChatMsg />
 
       <ChatInput />
     </div>
@@ -40,15 +32,12 @@
 
 <script setup lang="ts">
 import { Delete, Download } from '@element-plus/icons-vue'
+import { getCurSession } from './service/workspace'
 import ChatMsg from './ChatMsg.vue'
 import ChatLeft from './ChatLeft.vue'
 import ChatInput from './ChatInput.vue'
 
-const scrollToBottom = () => {
-  if (messagesContainer.value) {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-  }
-}
+const curSession = getCurSession()
 </script>
 
 <style lang="postcss" scoped>
@@ -84,30 +73,5 @@ const scrollToBottom = () => {
 .chat-actions {
   display: flex;
   gap: 10px;
-}
-
-.chat-messages {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  background-color: #fafafa;
-}
-
-/* 滚动条样式 */
-.chat-messages::-webkit-scrollbar {
-  width: 6px;
-}
-
-.chat-messages::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.chat-messages::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
 }
 </style>
