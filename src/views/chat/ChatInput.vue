@@ -43,9 +43,10 @@ import { ref } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useMessagesRepo } from '@/db/useMessagesRepo'
-import { getCurSession } from './service/workspace'
+import { getCurSession, getLastAiMsg } from './service/workspace'
 
 const curSession = getCurSession()
+const lastAiMsg = getLastAiMsg()
 const inputPrompt = ref('')
 const { addMessage, buildAiMessage, buildUserMessage } = useMessagesRepo()
 
