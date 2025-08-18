@@ -15,7 +15,7 @@
 
       <div class="msg-content">
         <div class="msg-text">
-          <v-md-preview :text="msg.content" />
+          <MdPreview :modelValue="msg.content" />
         </div>
         <div class="msg-time">{{ dayjs(msg.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</div>
       </div>
@@ -30,6 +30,7 @@ import { Role } from '@/schema/chat'
 import { useMessagesRepo } from '@/db/useMessagesRepo'
 import { getCurSession } from './service/workspace'
 import { User, Service } from '@element-plus/icons-vue'
+import { MdPreview } from 'md-editor-v3'
 
 const msgContainer = ref<HTMLElement | null>(null)
 const curSession = getCurSession()
@@ -98,8 +99,8 @@ function scrollToBottom() {
       background-color: #409eff;
       border-radius: 18px 18px 4px 18px;
 
-      :deep(.vuepress-markdown-body) {
-        color: #fff;
+      :deep(.md-editor) {
+        --md-color: #fff;
       }
     }
   }
@@ -124,15 +125,13 @@ function scrollToBottom() {
   flex-direction: column;
   max-width: 70%;
 
-  :deep(.vuepress-markdown-body) {
-    padding: 0;
-    font-size: 14px;
+  :deep(.md-editor) {
     background-color: transparent;
   }
 }
 
 .msg-text {
-  padding: 12px 16px;
+  padding: 0px 16px;
   /* padding: 12px 16px;
   font-size: 14px;
   line-height: 1.5;
