@@ -40,7 +40,7 @@ interface Message extends BaseEntity {
   turn: number // 严格递增（0,1,2…）
   role: Role
   content: string // 文本（可选：分块/压缩）
-  final?: boolean // 流式生成中：false；完成后：true
+  loading?: boolean // 流式生成中：true；完成后：false
 }
 
 export type { Message, Session }

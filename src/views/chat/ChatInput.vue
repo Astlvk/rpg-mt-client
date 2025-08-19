@@ -42,13 +42,17 @@
 import { ref } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { useMessagesRepo } from '@/db/useMessagesRepo'
-import { getCurSession, getLastAiMsg } from './service/workspace'
+import {
+  addMessage,
+  getMessagesBySessionId,
+  buildAiMessage,
+  buildUserMessage,
+} from '@/db/useMessagesRepo'
+import { getCurSession, setAutoScrollEnabled } from './service/workspace'
+import { chatWriter } from './service/useChat'
 
 const curSession = getCurSession()
-const lastAiMsg = getLastAiMsg()
 const inputPrompt = ref('')
-const { addMessage, buildAiMessage, buildUserMessage } = useMessagesRepo()
 
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Enter') {
@@ -77,11 +81,19 @@ async function sendMsg() {
   if (inputPrompt.value.trim() === '') {
     ElMessage.warning('请输入内容')
   } else {
-    const message = buildUserMessage(curSession.value!.id, 0, inputPrompt.value)
-    await addMessage(message)
-    console.log(inputPrompt.value)
+    const messages = await buildMessages()
+    setAutoScrollEnabled(true)
+    console.log(messages)
+    chatWriter(messages)
     inputPrompt.value = ''
   }
+}
+
+async function buildMessages() {
+  const message = buildUserMessage(curSession.value!.id, 0, inputPrompt.value)
+  await addMessage(message)
+  const messages = await getMessagesBySessionId(curSession.value!.id)
+  return messages
 }
 
 function handleClearMsg() {

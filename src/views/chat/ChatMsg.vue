@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-msg" ref="msgContainer">
+  <div class="chat-msg" ref="msgContainer" @scroll="handleScroll">
     <div
       v-for="msg in messages"
       :key="msg.id"
@@ -16,6 +16,13 @@
       <div class="msg-content">
         <div class="msg-text">
           <MdPreview :modelValue="msg.content" />
+
+          <div v-if="msg.loading" class="msg-loading">
+            <el-icon class="is-loading" size="16">
+              <Loading />
+            </el-icon>
+            <span>构思中...</span>
+          </div>
         </div>
         <div class="msg-time">{{ dayjs(msg.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</div>
       </div>
@@ -24,34 +31,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, watch } from 'vue'
+import { computed, watch } from 'vue'
 import dayjs from 'dayjs'
 import { Role } from '@/schema/chat'
-import { useMessagesRepo } from '@/db/useMessagesRepo'
-import { getCurSession } from './service/workspace'
+import { getMessagesBySessionIdObservable } from '@/db/useMessagesRepo'
+import {
+  msgContainer,
+  scrollToBottom,
+  getCurSession,
+  getLastAiMsg,
+  setAutoScrollEnabled,
+} from './service/workspace'
 import { User, Service } from '@element-plus/icons-vue'
 import { MdPreview } from 'md-editor-v3'
+import { Loading } from '@element-plus/icons-vue'
 
-const msgContainer = ref<HTMLElement | null>(null)
 const curSession = getCurSession()
-const { getMessagesBySessionIdObservable } = useMessagesRepo()
+const lastAiMsg = getLastAiMsg()
 // 函数返回的是一个ref对象，所以使用的时候需要主动.value，包装为computed只是为了响应式切换
 const messagesWrap = computed(() => getMessagesBySessionIdObservable(curSession.value?.id))
 // 主动解包一层
-const messages = computed(() => messagesWrap.value.value)
+const messages = computed(() => {
+  const res = [...(messagesWrap.value.value || [])]
+  if (lastAiMsg.value) {
+    res.push(lastAiMsg.value)
+  }
+  return res
+})
 
 watch(
   () => messages.value,
   () => {
-    nextTick(() => {
-      scrollToBottom()
-    })
+    scrollToBottom()
   },
 )
 
-function scrollToBottom() {
-  if (msgContainer.value) {
-    msgContainer.value.scrollTop = msgContainer.value.scrollHeight
+function handleScroll(e: Event) {
+  const container = e.target as HTMLElement
+  if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+    setAutoScrollEnabled(false)
   }
 }
 </script>
@@ -131,17 +149,24 @@ function scrollToBottom() {
 }
 
 .msg-text {
-  padding: 0px 16px;
-  /* padding: 12px 16px;
-  font-size: 14px;
-  line-height: 1.5;
-  word-wrap: break-word;
-  white-space: pre-wrap; */
+  padding: 4px 16px;
+  min-height: 20px;
 }
 
 .msg-time {
   font-size: 11px;
   color: #c0c4cc;
   margin-top: 4px;
+}
+
+.msg-loading {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  span {
+    font-size: 13px;
+    color: #909399;
+  }
 }
 </style>

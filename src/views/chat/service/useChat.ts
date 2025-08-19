@@ -1,21 +1,18 @@
+import type { Ref } from 'vue'
+import { type Message } from '@/schema/chat'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
+import { setLastAiMsg, scrollToBottom } from './workspace'
+import { buildAiMessage, addMessage } from '@/db/useMessagesRepo'
+import { getCurSession } from './workspace'
 
-async function chatAI(inputPrompt: string) {
+async function chatWriter(messages: Message[]) {
   try {
-    // 获取当前session的引用（发送sse请求时当前session可能会切换，因此这里需要直接获取触发sse的session引用）
-    const session = curSession.value
-    if (session !== undefined) {
-      session.msgLoading = true
-      session.messages.push({
-        role: Role.USER,
-        content: inputPrompt,
-      })
-      // 对ai的回答先进行占位
-      session.messages.push({
-        role: Role.AI,
-        content: '',
-      })
-      const url = '/agent/cs_v2_w'
+    const curSession = getCurSession()
+    if (curSession.value) {
+      // 生成ai回复的占位内容
+      const lastAiMsg = setLastAiMsg(buildAiMessage(curSession.value.id, 0, '', true))
+
+      const url = 'http://127.0.0.1:3307/rpg-mt/chat/writer'
       fetchEventSource(url, {
         method: 'POST',
         headers: {
@@ -23,7 +20,13 @@ async function chatAI(inputPrompt: string) {
         },
         openWhenHidden: true,
         body: JSON.stringify({
-          // ...
+          model: 'glm-4.5-flash',
+          sys_prompt: '你是一个乐于助人的智能助理。',
+          messages,
+          temperature: 0.9,
+          max_tokens: 4096,
+          streaming: true,
+          instruction: '请根据以下剧情，生成一个剧情',
         }),
         async onopen(response) {
           console.log('open', response)
@@ -35,27 +38,25 @@ async function chatAI(inputPrompt: string) {
           }
         },
         onmessage(ev) {
-          session.msgLoading = false
-          console.log(ev)
+          console.log('message', ev)
           // 接口返回值里有空字符串的情况
+          // 比如：message {data: '', event: '', id: '', retry: undefined}
           if (ev.data === '') {
             return
           }
           const data = JSON.parse(ev.data)
-          const messages = session.messages
-          const el = messages[messages.length - 1]
-          el.content += data.content
-          scrollToBottom(chatMsgRef.value)
+          if (lastAiMsg.value) {
+            lastAiMsg.value.content += data.content
+            scrollToBottom()
+          }
         },
         onerror(err) {
           console.error(err)
-          const messages = session.messages
-          const el = messages[messages.length - 1]
-          el.content = err.message || '网络请求错误'
           throw err
         },
         async onclose() {
           console.log('close')
+          addLastAiMsgToDb(lastAiMsg)
         },
       })
     }
@@ -63,3 +64,15 @@ async function chatAI(inputPrompt: string) {
     console.error(error)
   }
 }
+
+async function addLastAiMsgToDb(lastAiMsg: Ref<Message | null>) {
+  if (lastAiMsg.value) {
+    lastAiMsg.value.loading = false
+    lastAiMsg.value.updatedAt = Date.now()
+    const newMsg = { ...lastAiMsg.value }
+    setLastAiMsg(null)
+    await addMessage(newMsg)
+  }
+}
+
+export { chatWriter }

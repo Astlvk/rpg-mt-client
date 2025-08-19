@@ -38,6 +38,7 @@ import { onMounted } from 'vue'
 import dayjs from 'dayjs'
 import { getUUID } from '@/utils'
 import { useSessionsRepo } from '@/db/useSessionsRepo'
+import { deleteMessagesBySessionId } from '@/db/useMessagesRepo'
 import { setCurSession, getCurSession } from './service/workspace'
 import { ElMessageBox } from 'element-plus'
 import { Plus, ChatDotRound, Delete } from '@element-plus/icons-vue'
@@ -74,14 +75,15 @@ function handleSelectSession(session: Session) {
 }
 
 // 创建会话
-function handleCreateSession() {
+async function handleCreateSession() {
   const newSession = buildNewSession()
-  addSession(newSession)
+  await addSession(newSession)
+  setCurSession(newSession)
 }
 
 // 删除会话
-function handleDel(chatId: string) {
-  ElMessageBox.confirm('确认删除该会话吗？', {
+function handleDel(sessionId: string) {
+  ElMessageBox.confirm('将会删除该会话下的所有消息，确认删除吗？', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning',
@@ -89,8 +91,9 @@ function handleDel(chatId: string) {
       position: 'relative',
       top: '-10%',
     },
-  }).then(() => {
-    deleteSession(chatId)
+  }).then(async () => {
+    await deleteSession(sessionId)
+    await deleteMessagesBySessionId(sessionId)
   })
 }
 
