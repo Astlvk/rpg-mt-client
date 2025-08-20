@@ -1,7 +1,7 @@
 <template>
   <div class="chat-interface">
     <!-- 左侧会话列表 -->
-    <ChatLeft />
+    <ChatSession />
 
     <!-- 右侧聊天主界面 -->
     <div class="chat-main">
@@ -41,7 +41,7 @@ import { ref } from 'vue'
 import { Delete, Download, Setting } from '@element-plus/icons-vue'
 import { getCurSession } from './service/workspace'
 import ChatMsg from './ChatMsg.vue'
-import ChatLeft from './ChatLeft.vue'
+import ChatSession from './ChatSession.vue'
 import ChatInput from './ChatInput.vue'
 import SessionConfig from './components/SessionConfig/SessionConfig.vue'
 

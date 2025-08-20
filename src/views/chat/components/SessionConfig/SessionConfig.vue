@@ -1,14 +1,21 @@
 <template>
   <div class="session-config">
-    <el-drawer v-model="open" title="会话设置" size="50%" direction="rtl" @open="handleOpen">
-      <el-form :model="form" label-width="120px">
+    <el-drawer
+      v-model="open"
+      title="会话设置"
+      size="50%"
+      direction="rtl"
+      @open="handleOpen"
+      @close="handleClose"
+    >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
         <el-collapse v-model="activeNames">
           <el-collapse-item title="基础设置" name="base">
-            <el-form-item label="会话名称">
+            <el-form-item label="会话名称" prop="title">
               <el-input v-model="form.title" />
             </el-form-item>
 
-            <el-form-item label="系统提示词">
+            <el-form-item label="系统提示词" prop="config.sysPrompt">
               <el-input
                 v-model="form.config.sysPrompt"
                 type="textarea"
@@ -17,7 +24,7 @@
               />
             </el-form-item>
 
-            <el-form-item label="指令提示词">
+            <el-form-item label="指令提示词" prop="config.instructionPrompt">
               <el-input
                 v-model="form.config.instructionPrompt"
                 type="textarea"
@@ -26,39 +33,39 @@
               />
             </el-form-item>
 
-            <el-form-item label="历史消息数量">
+            <el-form-item label="历史消息数量" prop="config.history">
               <el-input-number v-model="form.config.history" :min="1" :max="100" />
             </el-form-item>
           </el-collapse-item>
 
           <el-collapse-item title="模型设置" name="model">
-            <el-form-item label="API Key">
+            <el-form-item label="API Key" prop="config.apiKey">
               <el-input v-model="form.config.apiKey" />
             </el-form-item>
 
-            <el-form-item label="Base URL">
+            <el-form-item label="Base URL" prop="config.baseUrl">
               <el-input v-model="form.config.baseUrl" />
             </el-form-item>
 
-            <el-form-item label="模型">
+            <el-form-item label="模型" prop="config.model">
               <el-select v-model="form.config.model" :options="modelOptions" />
             </el-form-item>
 
-            <el-form-item label="温度">
+            <el-form-item label="温度" prop="config.temperature">
               <el-slider v-model="form.config.temperature" :min="0" :max="1" :step="0.01" />
             </el-form-item>
 
-            <el-form-item label="最大token">
+            <el-form-item label="最大token" prop="config.maxTokens">
               <el-input-number v-model="form.config.maxTokens" :min="1" :max="65536" />
             </el-form-item>
           </el-collapse-item>
 
           <el-collapse-item title="摘要设置" name="summary">
-            <el-form-item label="启用摘要">
+            <el-form-item label="启用摘要" prop="config.enableSummary">
               <el-switch v-model="form.config.enableSummary" />
             </el-form-item>
 
-            <el-form-item label="摘要生成">
+            <el-form-item label="摘要生成" prop="config.summaryPrompt">
               <el-input
                 v-model="form.config.summaryPrompt"
                 type="textarea"
@@ -67,17 +74,17 @@
               />
             </el-form-item>
 
-            <el-form-item label="摘要轮数">
+            <el-form-item label="摘要轮数" prop="config.summaryTurn">
               <el-input-number v-model="form.config.summaryTurn" :min="1" />
             </el-form-item>
           </el-collapse-item>
 
           <el-collapse-item title="召回设置" name="retriever">
-            <el-form-item label="启用召回">
+            <el-form-item label="启用召回" prop="config.enableRetriever">
               <el-switch v-model="form.config.enableRetriever" />
             </el-form-item>
 
-            <el-form-item label="召回类别">
+            <el-form-item label="召回类别" prop="config.retrieverCategory">
               <el-checkbox-group v-model="form.config.retrieverCategory">
                 <template v-for="item in retrieverCategoryOptions" :key="item.value">
                   <el-checkbox
@@ -89,7 +96,7 @@
               </el-checkbox-group>
             </el-form-item>
 
-            <el-form-item label="召回方式">
+            <el-form-item label="召回方式" prop="config.retrieverType">
               <el-radio-group v-model="form.config.retrieverType">
                 <template v-for="item in retrieverTypeOptions" :key="item.value">
                   <el-radio :label="item.label" :value="item.value" />
@@ -97,11 +104,15 @@
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="召回数量">
+            <el-form-item label="召回距离" prop="config.distance">
+              <el-input-number v-model="form.config.distance" :min="0" :max="1" :step="0.01" />
+            </el-form-item>
+
+            <el-form-item label="召回数量" prop="config.topK">
               <el-input-number v-model="form.config.topK" :min="1" :max="100" />
             </el-form-item>
 
-            <el-form-item label="检索方式">
+            <el-form-item label="检索方式" prop="config.searchMode">
               <template #label>
                 <span>检索方式</span>
                 <el-tooltip
@@ -119,7 +130,7 @@
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="检索词提取">
+            <el-form-item label="检索词提取" prop="config.queryExtractPrompt">
               <el-input
                 v-model="form.config.queryExtractPrompt"
                 type="textarea"
@@ -132,7 +143,7 @@
       </el-form>
 
       <template #footer>
-        <el-button @click="handleClose">取消</el-button>
+        <el-button @click="open = false">取消</el-button>
         <el-button type="primary" @click="handleSave">保存</el-button>
       </template>
     </el-drawer>
@@ -162,28 +173,27 @@ const open = computed({
 })
 
 const {
-  curSession,
+  formRef,
   modelOptions,
   retrieverTypeOptions,
   retrieverCategoryOptions,
   searchModeOptions,
   activeNames,
   form,
+  rules,
+  save,
+  init,
 } = useSessionConfig()
 
 function handleOpen() {
-  if (curSession.value) {
-    form.id = curSession.value.id
-    form.title = curSession.value.title
-    form.config = curSession.value.config || form.config
-  }
-}
-
-function handleSave() {
-  console.log(form)
+  init()
 }
 
 function handleClose() {
-  open.value = false
+  formRef.value?.resetFields()
+}
+
+function handleSave() {
+  save()
 }
 </script>

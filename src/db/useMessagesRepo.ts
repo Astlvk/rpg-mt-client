@@ -1,3 +1,4 @@
+import { toRaw } from 'vue'
 import { liveQuery } from 'dexie'
 import { useObservable } from '@vueuse/rxjs'
 import { from } from 'rxjs'
@@ -11,12 +12,12 @@ const messages = useObservable(from(liveQuery(() => db.messages.orderBy('created
 
 // 新增消息
 function addMessage(message: Message) {
-  return db.messages.add(message)
+  return db.messages.add(toRaw(message))
 }
 
 // 更新消息
 function updateMessage(message: Message) {
-  return db.messages.put(message)
+  return db.messages.put(toRaw(message))
 }
 
 // 删除消息

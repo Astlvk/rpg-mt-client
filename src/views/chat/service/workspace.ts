@@ -1,4 +1,5 @@
 import { ref, nextTick } from 'vue'
+import { getSession } from '@/db/useSessionsRepo'
 import type { Session, Message } from '@/schema/chat'
 
 const curSession = ref<Session | null>(null)
@@ -12,6 +13,17 @@ function setCurSession(session: Session) {
 
 function getCurSession() {
   return curSession
+}
+
+// 根据sessionId重新设置curSession
+async function refreshCurSession(sessionId: string) {
+  const session = await getSession(sessionId)
+  if (session) {
+    setCurSession(session)
+    return curSession
+  } else {
+    throw new Error('会话不存在')
+  }
 }
 
 function setLastAiMsg(msg: Message | null) {
@@ -46,4 +58,5 @@ export {
   setLastAiMsg,
   getLastAiMsg,
   setAutoScrollEnabled,
+  refreshCurSession,
 }

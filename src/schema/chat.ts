@@ -37,9 +37,8 @@ interface Session extends BaseEntity {
 }
 
 interface SessionForm {
-  id: string // uuid
   title: string // 标题
-  config: Partial<SessionConfig>
+  config: SessionConfig
 }
 
 interface Message extends BaseEntity {
@@ -51,4 +50,8 @@ interface Message extends BaseEntity {
   loading?: boolean // 流式生成中：true；完成后：false
 }
 
-export type { Message, Session, SessionForm }
+type MessagePatch = Partial<Omit<Message, 'id'>> & { updatedAt?: number }
+
+type SessionPatch = Partial<Omit<Session, 'id'>> & { updatedAt?: number }
+
+export type { Message, Session, SessionForm, MessagePatch, SessionPatch }

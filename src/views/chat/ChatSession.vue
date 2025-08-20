@@ -33,80 +33,17 @@
 </template>
 
 <script setup lang="ts">
-import type { Session } from '@/schema/chat'
 import { onMounted } from 'vue'
 import dayjs from 'dayjs'
-import { getUUID } from '@/utils'
-import { useSessionsRepo } from '@/db/useSessionsRepo'
-import { deleteMessagesBySessionId } from '@/db/useMessagesRepo'
-import { setCurSession, getCurSession } from './service/workspace'
-import { ElMessageBox } from 'element-plus'
 import { Plus, ChatDotRound, Delete } from '@element-plus/icons-vue'
+import { useSession } from './service/useSession'
 
 onMounted(() => {
   init()
 })
 
-const curSession = getCurSession()
-const { sessions, getSessionCount, getSessionByIndex, addSession, deleteSession } =
-  useSessionsRepo()
-
-async function init() {
-  const count = await getSessionCount()
-
-  // 初始化，不存在则创建
-  if (count === 0) {
-    const newSession = buildNewSession()
-    await addSession(newSession)
-    setCurSession(newSession)
-  }
-
-  if (count > 0) {
-    const session = await getSessionByIndex(count - 1)
-    if (session) {
-      setCurSession(session)
-    }
-  }
-}
-
-// 选择会话
-function handleSelectSession(session: Session) {
-  setCurSession(session)
-}
-
-// 创建会话
-async function handleCreateSession() {
-  const newSession = buildNewSession()
-  await addSession(newSession)
-  setCurSession(newSession)
-}
-
-// 删除会话
-function handleDel(sessionId: string) {
-  ElMessageBox.confirm('将会删除该会话下的所有消息，确认删除吗？', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'warning',
-    customStyle: {
-      position: 'relative',
-      top: '-10%',
-    },
-  }).then(async () => {
-    await deleteSession(sessionId)
-    await deleteMessagesBySessionId(sessionId)
-  })
-}
-
-// 构建新会话对象
-function buildNewSession() {
-  const newSession = {
-    id: getUUID(),
-    title: '新的世界',
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  }
-  return newSession
-}
+const { sessions, curSession, init, handleSelectSession, handleCreateSession, handleDel } =
+  useSession()
 </script>
 
 <style lang="postcss" scoped>

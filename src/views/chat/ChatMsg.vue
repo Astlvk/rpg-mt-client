@@ -66,11 +66,8 @@ watch(
   },
 )
 
-function handleScroll(e: Event) {
-  const container = e.target as HTMLElement
-  if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
-    setAutoScrollEnabled(false)
-  }
+function handleScroll() {
+  setAutoScrollEnabled(false)
 }
 </script>
 
