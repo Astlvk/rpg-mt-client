@@ -21,7 +21,7 @@
             <el-icon class="is-loading" size="16">
               <Loading />
             </el-icon>
-            <span>构思中...</span>
+            <span>生成中...</span>
           </div>
         </div>
         <div class="msg-time">{{ dayjs(msg.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</div>
@@ -35,13 +35,7 @@ import { computed, watch } from 'vue'
 import dayjs from 'dayjs'
 import { Role } from '@/schema/enum'
 import { getMessagesBySessionIdObservable } from '@/db/useMessagesRepo'
-import {
-  msgContainer,
-  scrollToBottom,
-  getCurSession,
-  getLastAiMsg,
-  setAutoScrollEnabled,
-} from './service/workspace'
+import { msgContainer, scrollToBottom, getCurSession, getLastAiMsg } from './service/workspace'
 import { User, Service } from '@element-plus/icons-vue'
 import { MdPreview } from 'md-editor-v3'
 import { Loading } from '@element-plus/icons-vue'
@@ -66,8 +60,11 @@ watch(
   },
 )
 
-function handleScroll() {
-  setAutoScrollEnabled(false)
+function handleScroll(e: Event) {
+  const container = e.target as HTMLElement
+  if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+    // setAutoScrollEnabled(false)
+  }
 }
 </script>
 
