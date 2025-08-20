@@ -3,7 +3,8 @@ import { useObservable } from '@vueuse/rxjs'
 import { from } from 'rxjs'
 import { db } from './index'
 import { getUUID } from '@/utils'
-import { Role, type Message } from '@/schema/chat'
+import { Role } from '@/schema/enum'
+import type { Message } from '@/schema/chat'
 
 // 按照createdAt时间升序排序
 const messages = useObservable(from(liveQuery(() => db.messages.orderBy('createdAt').toArray())))

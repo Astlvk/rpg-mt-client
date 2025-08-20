@@ -12,11 +12,15 @@
         </div>
 
         <div class="chat-actions">
-          <el-button type="text">
+          <el-button type="text" @click="openSessionConfig = true">
+            <el-icon><Setting /></el-icon>
+            设置
+          </el-button>
+          <el-button type="text" disabled>
             <el-icon><Delete /></el-icon>
             清空聊天
           </el-button>
-          <el-button type="text">
+          <el-button type="text" disabled>
             <el-icon><Download /></el-icon>
             导出聊天
           </el-button>
@@ -27,17 +31,22 @@
 
       <ChatInput />
     </div>
+
+    <SessionConfig v-model="openSessionConfig" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { Delete, Download } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+import { Delete, Download, Setting } from '@element-plus/icons-vue'
 import { getCurSession } from './service/workspace'
 import ChatMsg from './ChatMsg.vue'
 import ChatLeft from './ChatLeft.vue'
 import ChatInput from './ChatInput.vue'
+import SessionConfig from './components/SessionConfig/SessionConfig.vue'
 
 const curSession = getCurSession()
+const openSessionConfig = ref(false)
 </script>
 
 <style lang="postcss" scoped>

@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import dayjs from 'dayjs'
-import { Role } from '@/schema/chat'
+import { Role } from '@/schema/enum'
 import { getMessagesBySessionIdObservable } from '@/db/useMessagesRepo'
 import {
   msgContainer,

@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Position } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import {
   addMessage,
   getMessagesBySessionId,
@@ -94,20 +94,6 @@ async function buildMessages() {
   await addMessage(message)
   const messages = await getMessagesBySessionId(curSession.value!.id)
   return messages
-}
-
-function handleClearMsg() {
-  ElMessageBox.confirm('确认清空对话记录吗？', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'warning',
-    customStyle: {
-      position: 'relative',
-      top: '-10%',
-    },
-  }).then(() => {
-    // clearMsg()
-  })
 }
 </script>
 
