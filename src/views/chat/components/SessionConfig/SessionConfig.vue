@@ -5,6 +5,7 @@
       title="会话设置"
       size="50%"
       direction="rtl"
+      :z-index="10001"
       @open="handleOpen"
       @close="handleClose"
     >
