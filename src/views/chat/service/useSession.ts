@@ -11,7 +11,7 @@ import {
 } from '@/db/useSessionsRepo'
 import { deleteMessagesBySessionId } from '@/db/useMessagesRepo'
 import { setCurSession, getCurSession, setAutoScrollEnabled } from './workspace'
-import { RetrieverCategory, RetrieverType, SearchMode, ZhipuAIModel } from '@/schema/enum'
+import { RetrieverCategory, RetrieverType, SearchMode } from '@/schema/enum'
 import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
 
 export function useSession() {
@@ -102,17 +102,17 @@ export function useSession() {
         summaryPrompt: '',
         queryExtractPrompt: '',
         writerModel: {
-          model: ZhipuAIModel.GLM45FLASH,
+          model: '',
           temperature: 0.9,
           maxTokens: 65536,
         },
         summaryModel: {
-          model: ZhipuAIModel.GLM45FLASH,
+          model: '',
           temperature: 0.5,
           maxTokens: 65536,
         },
         retrieverModel: {
-          model: ZhipuAIModel.GLM45FLASH,
+          model: '',
           temperature: 0.5,
           maxTokens: 65536,
         },
@@ -126,6 +126,7 @@ export function useSession() {
         summaryTurn: 5,
         distance: 0.5,
       },
+      lastMsgTime: Date.now(),
       createdAt: Date.now(),
       updatedAt: Date.now(),
     }

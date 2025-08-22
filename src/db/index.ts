@@ -4,7 +4,7 @@ import type { Session, Message } from '@/schema/chat'
 const dbName = 'rpg-mt-db'
 const dbVersion = 1
 const dbSchema = {
-  sessions: '&id, title, createdAt, updatedAt',
+  sessions: '&id, title, createdAt, updatedAt, lastMsgTime',
   messages: '&id, sessionId, turn, role, createdAt, updatedAt, [sessionId+turn]',
 }
 

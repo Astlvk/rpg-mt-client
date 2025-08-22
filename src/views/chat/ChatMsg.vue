@@ -24,7 +24,21 @@
             <span>生成中...</span>
           </div>
         </div>
-        <div class="msg-time">{{ dayjs(msg.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</div>
+        <div class="msg-time">
+          {{ dayjs(msg.createdAt).format('YYYY-MM-DD HH:mm:ss') }}
+          <el-popconfirm
+            title="确定删除该消息吗？"
+            placement="left-start"
+            width="200"
+            cancel-button-text="取消"
+            confirm-button-text="确定"
+            @confirm="deleteMessageById(msg.id)"
+          >
+            <template #reference>
+              <el-button type="danger" link size="small" :icon="Delete" />
+            </template>
+          </el-popconfirm>
+        </div>
       </div>
     </div>
   </div>
@@ -34,11 +48,11 @@
 import { computed, watch } from 'vue'
 import dayjs from 'dayjs'
 import { Role } from '@/schema/enum'
-import { getMessagesBySessionIdObservable } from '@/db/useMessagesRepo'
+import { getMessagesBySessionIdObservable, deleteMessageById } from '@/db/useMessagesRepo'
 import { msgContainer, scrollToBottom, getCurSession, getLastAiMsg } from './service/workspace'
 import { User, Service } from '@element-plus/icons-vue'
 import { MdPreview } from 'md-editor-v3'
-import { Loading } from '@element-plus/icons-vue'
+import { Loading, Delete } from '@element-plus/icons-vue'
 
 const curSession = getCurSession()
 const lastAiMsg = getLastAiMsg()
@@ -151,6 +165,9 @@ function handleScroll(e: Event) {
 }
 
 .msg-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11px;
   color: #c0c4cc;
   margin-top: 4px;

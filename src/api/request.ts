@@ -5,7 +5,7 @@ const request = axios.create({
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
   },
-  timeout: 10000,
+  timeout: 1000 * 60,
 })
 
 // 获取填充数据

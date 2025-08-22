@@ -68,6 +68,11 @@ function deleteMessagesBySessionId(sessionId: string) {
   return db.messages.where('sessionId').equals(sessionId).delete()
 }
 
+// 根据id删除消息
+function deleteMessageById(id: string) {
+  return db.messages.delete(id)
+}
+
 function buildMessage(
   sessionId: string,
   turn: number,
@@ -110,6 +115,7 @@ export {
   getMessagesBySessionId,
   getMessagesBySessionIdObservable,
   deleteMessagesBySessionId,
+  deleteMessageById,
   buildMessage,
   buildAiMessage,
   buildUserMessage,

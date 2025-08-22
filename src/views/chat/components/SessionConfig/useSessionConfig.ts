@@ -1,6 +1,12 @@
 import type { ModelConfigType, SessionForm } from '@/schema/chat'
 import { ref, reactive, toRaw } from 'vue'
-import { ZhipuAIModel, RetrieverType, RetrieverCategory, SearchMode } from '@/schema/enum'
+import {
+  ZhipuAIModel,
+  DeepSeekModel,
+  RetrieverType,
+  RetrieverCategory,
+  SearchMode,
+} from '@/schema/enum'
 import { getCurSession, refreshCurSession } from '../../service/workspace'
 import { updateSession } from '@/db/useSessionsRepo'
 import { ElMessage, type FormInstance } from 'element-plus'
@@ -13,12 +19,24 @@ export function useSessionConfig() {
   const activeNameTab = ref<ModelConfigType>('writerModel')
 
   const modelOptions = [
-    { label: 'GLM-4.5V', value: ZhipuAIModel.GLM45V },
-    { label: 'GLM-4.5', value: ZhipuAIModel.GLM45 },
-    { label: 'GLM-4.5X', value: ZhipuAIModel.GLM45X },
-    { label: 'GLM-4.5 Air', value: ZhipuAIModel.GLM45AIR },
-    { label: 'GLM-4.5 AirX', value: ZhipuAIModel.GLM45AIRX },
-    { label: 'GLM-4.5 Flash', value: ZhipuAIModel.GLM45FLASH },
+    {
+      label: 'deepseek',
+      options: [
+        { label: 'DeepSeek-Chat', value: DeepSeekModel.DEEPSEEK_CHAT },
+        { label: 'DeepSeek-Reasoner', value: DeepSeekModel.DEEPSEEK_REASONER },
+      ],
+    },
+    {
+      label: 'glm',
+      options: [
+        { label: 'GLM-4.5V', value: ZhipuAIModel.GLM45V },
+        { label: 'GLM-4.5', value: ZhipuAIModel.GLM45 },
+        { label: 'GLM-4.5X', value: ZhipuAIModel.GLM45X },
+        { label: 'GLM-4.5 Air', value: ZhipuAIModel.GLM45AIR },
+        { label: 'GLM-4.5 AirX', value: ZhipuAIModel.GLM45AIRX },
+        { label: 'GLM-4.5 Flash', value: ZhipuAIModel.GLM45FLASH },
+      ],
+    },
   ]
   // 召回方式
   const retrieverTypeOptions = [

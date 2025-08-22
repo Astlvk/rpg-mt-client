@@ -13,6 +13,11 @@ enum ZhipuAIModel {
   GLM45FLASH = 'glm-4.5-flash',
 }
 
+enum DeepSeekModel {
+  DEEPSEEK_CHAT = 'deepseek-chat',
+  DEEPSEEK_REASONER = 'deepseek-reasoner',
+}
+
 enum Role {
   SYSTEM = 'system',
   AI = 'assistant',
@@ -39,4 +44,4 @@ enum SearchMode {
   AGENT = 'agent',
 }
 
-export { Model, ZhipuAIModel, Role, RetrieverType, RetrieverCategory, SearchMode }
+export { Model, ZhipuAIModel, DeepSeekModel, Role, RetrieverType, RetrieverCategory, SearchMode }

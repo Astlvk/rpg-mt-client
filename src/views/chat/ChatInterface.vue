@@ -12,6 +12,11 @@
         </div>
 
         <div class="chat-actions">
+          <div v-if="summaryLoading" class="memory-loading">
+            <el-icon class="is-loading"><Loading /></el-icon>
+            <el-text>记忆中...</el-text>
+            <el-divider direction="vertical" />
+          </div>
           <el-text>回合：{{ curSession?.turn }}</el-text>
           <el-divider direction="vertical" />
           <el-button type="text" @click="openSessionConfig = true">
@@ -44,8 +49,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Delete, Download, Setting, Memo } from '@element-plus/icons-vue'
-import { getCurSession } from './service/workspace'
+import { Delete, Download, Setting, Memo, Loading } from '@element-plus/icons-vue'
+import { getCurSession, getSummaryLoading } from './service/workspace'
 import ChatMsg from './ChatMsg.vue'
 import ChatSession from './ChatSession.vue'
 import ChatInput from './ChatInput.vue'
@@ -53,6 +58,7 @@ import SessionConfig from './components/SessionConfig/SessionConfig.vue'
 
 const curSession = getCurSession()
 const openSessionConfig = ref(false)
+const summaryLoading = getSummaryLoading()
 </script>
 
 <style lang="postcss" scoped>
@@ -77,17 +83,29 @@ const openSessionConfig = ref(false)
   justify-content: space-between;
   align-items: center;
 
-  h2 {
-    margin: 0;
-    color: #303133;
-    font-size: 18px;
-    font-weight: 600;
+  .chat-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    h2 {
+      margin: 0;
+      color: #303133;
+      font-size: 18px;
+      font-weight: 600;
+    }
   }
 }
 
 .chat-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  /* gap: 10px; */
+
+  .memory-loading {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
 }
 </style>

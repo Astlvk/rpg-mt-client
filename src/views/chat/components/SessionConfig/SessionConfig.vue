@@ -15,7 +15,7 @@
         <el-collapse v-model="activeNames">
           <el-collapse-item title="基础设置" name="base">
             <el-form-item label="会话名称" prop="title">
-              <el-input v-model="form.title" />
+              <el-input v-model="form.title" placeholder="会话名称" />
             </el-form-item>
 
             <el-form-item label="历史消息数量" prop="config.history">
@@ -25,11 +25,18 @@
 
           <el-collapse-item title="模型设置" name="model">
             <el-form-item label="API Key" :prop="`config.apiKey`">
-              <el-input v-model="form.config.apiKey" />
+              <el-input
+                v-model="form.config.apiKey"
+                type="password"
+                placeholder="模型服务商API Key"
+              />
             </el-form-item>
 
             <el-form-item label="Base URL" :prop="`config.baseUrl`">
-              <el-input v-model="form.config.baseUrl" />
+              <el-input
+                v-model="form.config.baseUrl"
+                placeholder="模型服务商Base URL（openai对齐）"
+              />
             </el-form-item>
 
             <div style="display: flex">
@@ -37,7 +44,20 @@
                 <template v-for="item in modelConfigTypes" :key="item">
                   <div v-show="item === activeNameTab">
                     <el-form-item label="模型" :prop="`config.${item}.model`">
-                      <el-select v-model="form.config[item].model" :options="modelOptions" />
+                      <el-select v-model="form.config[item].model" placeholder="请选择模型">
+                        <el-option-group
+                          v-for="group in modelOptions"
+                          :key="group.label"
+                          :label="group.label"
+                        >
+                          <el-option
+                            v-for="option in group.options"
+                            :key="option.value"
+                            :label="option.label"
+                            :value="option.value"
+                          />
+                        </el-option-group>
+                      </el-select>
                     </el-form-item>
 
                     <el-form-item label="温度" :prop="`config.${item}.temperature`">

@@ -16,8 +16,8 @@ interface ModelConfig {
 }
 
 interface SessionConfig {
-  apiKey?: string // api key
-  baseUrl?: string // base url
+  apiKey: string // api key
+  baseUrl: string // base url
   writerModel: ModelConfig
   summaryModel: ModelConfig
   retrieverModel: ModelConfig
@@ -43,7 +43,7 @@ interface Session extends BaseEntity {
   turn: number // 当前对话轮次
   config: SessionConfig // 会话配置
   lastMsg?: string // 最后消息
-  lastMsgTime?: string // 最后消息时间，时间戳
+  lastMsgTime?: number // 最后消息时间，时间戳
 }
 
 interface SessionForm {

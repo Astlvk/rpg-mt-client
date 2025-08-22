@@ -6,6 +6,7 @@ const curSession = ref<Session | null>(null)
 const lastAiMsg = ref<Message | null>(null)
 const msgContainer = ref<HTMLElement | null>(null)
 const autoScrollEnabled = ref(true)
+const summaryLoading = ref(false)
 
 function setCurSession(session: Session | null) {
   curSession.value = session
@@ -39,6 +40,14 @@ function setAutoScrollEnabled(enabled: boolean) {
   autoScrollEnabled.value = enabled
 }
 
+function getSummaryLoading() {
+  return summaryLoading
+}
+
+function setSummaryLoading(loading: boolean) {
+  summaryLoading.value = loading
+}
+
 function scrollToBottom() {
   if (!autoScrollEnabled.value) {
     return
@@ -52,6 +61,8 @@ function scrollToBottom() {
 
 export {
   msgContainer,
+  getSummaryLoading,
+  setSummaryLoading,
   scrollToBottom,
   setCurSession,
   getCurSession,
