@@ -17,6 +17,10 @@
             设置
           </el-button>
           <el-button type="text" disabled>
+            <el-icon><Memo /></el-icon>
+            记忆
+          </el-button>
+          <el-button type="text" disabled>
             <el-icon><Delete /></el-icon>
             清空聊天
           </el-button>
@@ -38,7 +42,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Delete, Download, Setting } from '@element-plus/icons-vue'
+import { Delete, Download, Setting, Memo } from '@element-plus/icons-vue'
 import { getCurSession } from './service/workspace'
 import ChatMsg from './ChatMsg.vue'
 import ChatSession from './ChatSession.vue'
@@ -65,7 +69,7 @@ const openSessionConfig = ref(false)
 }
 
 .chat-header {
-  padding: 20px;
+  padding: 12px;
   border-bottom: 1px solid #e4e7ed;
   display: flex;
   justify-content: space-between;

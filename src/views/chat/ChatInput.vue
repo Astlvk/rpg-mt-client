@@ -1,22 +1,22 @@
 <template>
   <div class="chat-input">
-    <div class="setting cursor-pointer flex items-center">
-      <label class="text-[12px] text-[#86929e] mr-[8px]">记录对话</label>
+    <div class="setting">
+      <label class="">深度思考</label>
       <el-switch class="mr-[8px]" :active-value="false" :inactive-value="true" size="small" />
     </div>
 
     <div class="default-size">
       <el-input
         v-model="inputPrompt"
-        :rows="8"
+        :rows="5"
         type="textarea"
         resize="none"
         placeholder="enter发送，shift+enter或ctrl+enter换行"
         @keydown="handleKeydown"
       />
       <div class="btn">
-        <el-button color="rgba(51, 97, 255, 1)" :icon="Position" @click="sendTest"> AI </el-button>
-        <el-button color="rgba(51, 97, 255, 1)" :icon="Position" @click="sendMsg"> 发送 </el-button>
+        <!-- color="rgba(51, 97, 255, 1)" -->
+        <el-button type="primary" :icon="Position" @click="sendMsg"> 发送 </el-button>
       </div>
     </div>
 
@@ -42,12 +42,7 @@
 import { ref } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import {
-  addMessage,
-  getMessagesBySessionId,
-  buildAiMessage,
-  buildUserMessage,
-} from '@/db/useMessagesRepo'
+import { addMessage, getMessagesBySessionId, buildUserMessage } from '@/db/useMessagesRepo'
 import { getCurSession, setAutoScrollEnabled } from './service/workspace'
 import { chatWriter } from './service/useChat'
 
@@ -63,17 +58,6 @@ function handleKeydown(e: KeyboardEvent) {
       e.preventDefault()
       sendMsg()
     }
-  }
-}
-
-async function sendTest() {
-  if (inputPrompt.value.trim() === '') {
-    ElMessage.warning('请输入内容')
-  } else {
-    const message = buildAiMessage(curSession.value!.id, 0, inputPrompt.value)
-    await addMessage(message)
-    console.log(inputPrompt.value)
-    inputPrompt.value = ''
   }
 }
 
@@ -132,6 +116,14 @@ async function buildMessages() {
     top: 30px;
     right: 25px;
     z-index: 1;
+    display: flex;
+    align-items: center;
+
+    label {
+      font-size: 13px;
+      color: #86929e;
+      margin-right: 8px;
+    }
   }
 
   @media (max-width: 500px) {

@@ -140,6 +140,9 @@ function handleScroll(e: Event) {
   :deep(.md-editor) {
     background-color: transparent;
   }
+  :deep(.md-editor-code-head) {
+    z-index: 1000;
+  }
 }
 
 .msg-text {

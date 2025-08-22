@@ -1,5 +1,6 @@
 import type { Session } from '@/schema/chat'
 import { watch } from 'vue'
+import { addTenant, deleteTenant } from '@/api/base.api'
 import { getUUID } from '@/utils'
 import {
   sessions,
@@ -10,7 +11,7 @@ import {
 } from '@/db/useSessionsRepo'
 import { deleteMessagesBySessionId } from '@/db/useMessagesRepo'
 import { setCurSession, getCurSession, setAutoScrollEnabled } from './workspace'
-import { ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
 
 export function useSession() {
   const curSession = getCurSession()
@@ -24,9 +25,7 @@ export function useSession() {
 
     // 初始化，不存在则创建
     if (count === 0) {
-      const newSession = buildNewSession()
-      await addSession(newSession)
-      setCurSession(newSession)
+      await handleCreateSession()
     }
 
     if (count > 0) {
@@ -44,9 +43,19 @@ export function useSession() {
 
   // 创建会话
   async function handleCreateSession() {
-    const newSession = buildNewSession()
-    await addSession(newSession)
-    setCurSession(newSession)
+    const loading = ElLoading.service({
+      text: '创建中...',
+    })
+    try {
+      const newSession = buildNewSession()
+      await addSession(newSession)
+      setCurSession(newSession)
+      await addTenant(newSession.id)
+    } catch (error) {
+      console.error(error)
+      ElMessage.error('创建会话失败')
+    }
+    loading.close()
   }
 
   // 删除会话
@@ -60,8 +69,21 @@ export function useSession() {
         top: '-10%',
       },
     }).then(async () => {
-      await deleteSession(sessionId)
-      await deleteMessagesBySessionId(sessionId)
+      const loading = ElLoading.service({
+        text: '删除中...',
+      })
+      try {
+        await deleteSession(sessionId)
+        await deleteMessagesBySessionId(sessionId)
+        await deleteTenant(sessionId)
+        if (curSession.value?.id === sessionId) {
+          setCurSession(null)
+        }
+      } catch (error) {
+        console.error(error)
+        ElMessage.error(error as Error)
+      }
+      loading.close()
     })
   }
 
@@ -69,7 +91,7 @@ export function useSession() {
   function buildNewSession() {
     const newSession = {
       id: getUUID(),
-      title: '新的世界',
+      title: '新的会话',
       createdAt: Date.now(),
       updatedAt: Date.now(),
     }

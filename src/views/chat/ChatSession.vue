@@ -2,7 +2,7 @@
   <div class="chat-left">
     <div class="sidebar-header">
       <h2>RPG-MT</h2>
-      <el-button type="primary" :icon="Plus" @click="handleCreateSession"> 新的世界 </el-button>
+      <el-button type="primary" :icon="Plus" @click="handleCreateSession"> 新的会话 </el-button>
     </div>
 
     <div class="chat-list">

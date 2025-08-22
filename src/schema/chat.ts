@@ -5,13 +5,20 @@ interface BaseEntity {
   updatedAt: number // 更新时间，时间戳
 }
 
-interface SessionConfig {
+type ModelConfigType = 'writerModel' | 'retrieverModel' | 'summaryModel'
+
+interface ModelConfig {
   model: string // 模型
   apiKey?: string // api key
   baseUrl?: string // base url
   temperature: number // 温度
   maxTokens: number // 最大token
-  history: number // 携带的历史消息数量
+}
+interface SessionConfig {
+  writerModel: ModelConfig
+  summaryModel: ModelConfig
+  retrieverModel: ModelConfig
+  history?: number // 携带的历史消息数量
   topK: number // 召回数量
   distance: number // 距离
   sysPrompt: string // 系统提示词
@@ -54,4 +61,4 @@ type MessagePatch = Partial<Omit<Message, 'id'>> & { updatedAt?: number }
 
 type SessionPatch = Partial<Omit<Session, 'id'>> & { updatedAt?: number }
 
-export type { Message, Session, SessionForm, MessagePatch, SessionPatch }
+export type { Message, Session, SessionForm, MessagePatch, SessionPatch, ModelConfigType }

@@ -1,4 +1,4 @@
-import type { SessionForm } from '@/schema/chat'
+import type { ModelConfigType, SessionForm } from '@/schema/chat'
 import { ref, reactive, toRaw } from 'vue'
 import { ZhipuAIModel, RetrieverType, RetrieverCategory, SearchMode } from '@/schema/enum'
 import { getCurSession, refreshCurSession } from '../../service/workspace'
@@ -10,6 +10,7 @@ export function useSessionConfig() {
   const formRef = ref<FormInstance>()
 
   const activeNames = ref(['base', 'model', 'summary', 'retriever'])
+  const activeNameTab = ref<ModelConfigType>('writerModel')
 
   const modelOptions = [
     { label: 'GLM-4.5V', value: ZhipuAIModel.GLM45V },
@@ -34,7 +35,8 @@ export function useSessionConfig() {
     { label: '强制检索', value: SearchMode.FORCE },
     { label: 'Agent检索', value: SearchMode.AGENT },
   ]
-
+  // 模型配置
+  const modelConfigTypes: ModelConfigType[] = ['writerModel', 'retrieverModel', 'summaryModel']
   const form = reactive<SessionForm>({
     title: '',
     config: {
@@ -42,11 +44,27 @@ export function useSessionConfig() {
       instructionPrompt: '',
       summaryPrompt: '',
       queryExtractPrompt: '',
-      model: ZhipuAIModel.GLM45FLASH,
-      apiKey: '',
-      baseUrl: '',
-      temperature: 0.9,
-      maxTokens: 65536,
+      writerModel: {
+        model: ZhipuAIModel.GLM45FLASH,
+        apiKey: '',
+        baseUrl: '',
+        temperature: 0.9,
+        maxTokens: 65536,
+      },
+      summaryModel: {
+        model: ZhipuAIModel.GLM45FLASH,
+        apiKey: '',
+        baseUrl: '',
+        temperature: 0.9,
+        maxTokens: 65536,
+      },
+      retrieverModel: {
+        model: ZhipuAIModel.GLM45FLASH,
+        apiKey: '',
+        baseUrl: '',
+        temperature: 0.9,
+        maxTokens: 65536,
+      },
       topK: 5,
       history: 10,
       retrieverType: RetrieverType.SEMANTIC,
@@ -60,8 +78,14 @@ export function useSessionConfig() {
   })
   const rules = ref({
     title: [{ required: true, message: '请输入会话名称', trigger: 'blur' }],
-    'config.apiKey': [{ required: true, message: '请输入API Key', trigger: 'blur' }],
-    'config.baseUrl': [{ required: true, message: '请输入Base URL', trigger: 'blur' }],
+    'config.writerModel.apiKey': [{ required: true, message: '请输入API Key', trigger: 'blur' }],
+    'config.writerModel.baseUrl': [{ required: true, message: '请输入Base URL', trigger: 'blur' }],
+    'config.retrieverModel.apiKey': [{ required: true, message: '请输入API Key', trigger: 'blur' }],
+    'config.retrieverModel.baseUrl': [
+      { required: true, message: '请输入Base URL', trigger: 'blur' },
+    ],
+    'config.summaryModel.apiKey': [{ required: true, message: '请输入API Key', trigger: 'blur' }],
+    'config.summaryModel.baseUrl': [{ required: true, message: '请输入Base URL', trigger: 'blur' }],
   })
 
   function init() {
@@ -79,20 +103,25 @@ export function useSessionConfig() {
     if (curSession.value) {
       try {
         await formRef.value?.validate()
-        // 获取下原始对象，不然响应式对象无法入库（报错无法clone）
-        const rawForm = toRaw(form)
-        await updateSession(curSession.value.id, {
-          title: rawForm.title,
-          // 笑死，这里直接传rawForm.config也会导致form.config === curSession.value.config
-          // 不好说是dexie官方推荐的vue响应式数据会复用对象还是dexie会复用对象
-          config: structuredClone(rawForm.config),
-          updatedAt: Date.now(),
-        })
-        ElMessage.success('保存成功')
-        await refreshCurSession(curSession.value.id)
+        try {
+          // 获取下原始对象，不然响应式对象无法入库（报错无法clone）
+          const rawForm = toRaw(form)
+          await updateSession(curSession.value.id, {
+            title: rawForm.title,
+            // 笑死，这里直接传rawForm.config也会导致form.config === curSession.value.config
+            // 不好说是dexie官方推荐的vue响应式数据会复用对象还是dexie会复用对象
+            config: structuredClone(rawForm.config),
+            updatedAt: Date.now(),
+          })
+          ElMessage.success('保存成功')
+          await refreshCurSession(curSession.value.id)
+        } catch (error) {
+          console.error(error)
+          ElMessage.error((error as Error).message)
+        }
       } catch (error) {
         console.error(error)
-        ElMessage.error((error as Error).message)
+        ElMessage.error('请检查表单是否填写正确')
       }
     }
   }
@@ -103,7 +132,9 @@ export function useSessionConfig() {
     retrieverTypeOptions,
     retrieverCategoryOptions,
     searchModeOptions,
+    modelConfigTypes,
     activeNames,
+    activeNameTab,
     formRef,
     form,
     rules,

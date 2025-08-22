@@ -5,7 +5,9 @@
       title="会话设置"
       size="50%"
       direction="rtl"
-      :z-index="10001"
+      append-to-body
+      destroy-on-close
+      :z-index="1001"
       @open="handleOpen"
       @close="handleClose"
     >
@@ -17,19 +19,21 @@
             </el-form-item>
 
             <el-form-item label="系统提示词" prop="config.sysPrompt">
-              <el-input
+              <MdEditor
                 v-model="form.config.sysPrompt"
-                type="textarea"
-                :rows="10"
+                :preview="false"
+                :toolbars="toolbars"
+                style="height: 200px"
                 placeholder="系统提示词，可用于设置角色、世界观等"
               />
             </el-form-item>
 
             <el-form-item label="指令提示词" prop="config.instructionPrompt">
-              <el-input
+              <MdEditor
                 v-model="form.config.instructionPrompt"
-                type="textarea"
-                :rows="10"
+                :preview="false"
+                :toolbars="toolbars"
+                style="height: 200px"
                 placeholder="指令提示词，用于指示每次AI如何生成内容"
               />
             </el-form-item>
@@ -40,25 +44,40 @@
           </el-collapse-item>
 
           <el-collapse-item title="模型设置" name="model">
-            <el-form-item label="API Key" prop="config.apiKey">
-              <el-input v-model="form.config.apiKey" />
-            </el-form-item>
+            <el-tabs v-model="activeNameTab" type="card">
+              <el-tab-pane label="写作模型" name="writerModel" />
+              <el-tab-pane label="检索模型" name="retrieverModel" />
+              <el-tab-pane label="摘要模型" name="summaryModel" />
+            </el-tabs>
 
-            <el-form-item label="Base URL" prop="config.baseUrl">
-              <el-input v-model="form.config.baseUrl" />
-            </el-form-item>
+            <template v-for="item in modelConfigTypes" :key="item">
+              <div v-show="item === activeNameTab">
+                <el-form-item label="API Key" :prop="`config.${item}.apiKey`">
+                  <el-input v-model="form.config[item].apiKey" />
+                </el-form-item>
 
-            <el-form-item label="模型" prop="config.model">
-              <el-select v-model="form.config.model" :options="modelOptions" />
-            </el-form-item>
+                <el-form-item label="Base URL" :prop="`config.${item}.baseUrl`">
+                  <el-input v-model="form.config[item].baseUrl" />
+                </el-form-item>
 
-            <el-form-item label="温度" prop="config.temperature">
-              <el-slider v-model="form.config.temperature" :min="0" :max="1" :step="0.01" />
-            </el-form-item>
+                <el-form-item label="模型" :prop="`config.${item}.model`">
+                  <el-select v-model="form.config[item].model" :options="modelOptions" />
+                </el-form-item>
 
-            <el-form-item label="最大token" prop="config.maxTokens">
-              <el-input-number v-model="form.config.maxTokens" :min="1" :max="65536" />
-            </el-form-item>
+                <el-form-item label="温度" :prop="`config.${item}.temperature`">
+                  <el-slider
+                    v-model="form.config[item].temperature"
+                    :min="0"
+                    :max="1"
+                    :step="0.01"
+                  />
+                </el-form-item>
+
+                <el-form-item label="最大token" :prop="`config.${item}.maxTokens`">
+                  <el-input-number v-model="form.config[item].maxTokens" :min="1" :max="65536" />
+                </el-form-item>
+              </div>
+            </template>
           </el-collapse-item>
 
           <el-collapse-item title="摘要设置" name="summary">
@@ -66,11 +85,12 @@
               <el-switch v-model="form.config.enableSummary" />
             </el-form-item>
 
-            <el-form-item label="摘要生成" prop="config.summaryPrompt">
-              <el-input
+            <el-form-item label="摘要提示" prop="config.summaryPrompt">
+              <MdEditor
                 v-model="form.config.summaryPrompt"
-                type="textarea"
-                :rows="10"
+                :preview="false"
+                :toolbars="toolbars"
+                style="height: 200px"
                 placeholder="用于生成历史摘要的提示词"
               />
             </el-form-item>
@@ -132,10 +152,11 @@
             </el-form-item>
 
             <el-form-item label="检索词提取" prop="config.queryExtractPrompt">
-              <el-input
+              <MdEditor
                 v-model="form.config.queryExtractPrompt"
-                type="textarea"
-                :rows="10"
+                :preview="false"
+                :toolbars="toolbars"
+                style="height: 200px"
                 placeholder="用于提取检索词的提示词"
               />
             </el-form-item>
@@ -156,6 +177,7 @@ import { computed } from 'vue'
 import { RetrieverCategory } from '@/schema/enum'
 import { useSessionConfig } from './useSessionConfig'
 import { QuestionFilled } from '@element-plus/icons-vue'
+import { MdEditor, type ToolbarNames } from 'md-editor-v3'
 
 const props = defineProps({
   modelValue: {
@@ -179,12 +201,49 @@ const {
   retrieverTypeOptions,
   retrieverCategoryOptions,
   searchModeOptions,
+  modelConfigTypes,
   activeNames,
+  activeNameTab,
   form,
   rules,
   save,
   init,
 } = useSessionConfig()
+const toolbars: ToolbarNames[] = [
+  'pageFullscreen',
+  'fullscreen',
+  '-',
+  'bold',
+  'underline',
+  'italic',
+  '-',
+  'title',
+  'strikeThrough',
+  'sub',
+  'sup',
+  'quote',
+  'unorderedList',
+  'orderedList',
+  'task',
+  '-',
+  'codeRow',
+  'code',
+  'link',
+  'image',
+  'table',
+  'mermaid',
+  'katex',
+  '-',
+  'revoke',
+  'next',
+  'save',
+  '=',
+  'preview',
+  'previewOnly',
+  'htmlPreview',
+  'catalog',
+  'github',
+]
 
 function handleOpen() {
   init()

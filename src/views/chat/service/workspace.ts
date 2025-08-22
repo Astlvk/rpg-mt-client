@@ -7,7 +7,7 @@ const lastAiMsg = ref<Message | null>(null)
 const msgContainer = ref<HTMLElement | null>(null)
 const autoScrollEnabled = ref(true)
 
-function setCurSession(session: Session) {
+function setCurSession(session: Session | null) {
   curSession.value = session
 }
 
