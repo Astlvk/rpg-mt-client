@@ -1,9 +1,9 @@
 import type { Ref } from 'vue'
 import { type Message } from '@/schema/chat'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
-import { setLastAiMsg, scrollToBottom } from './workspace'
+import { getCurSession, setLastAiMsg, scrollToBottom } from './workspace'
 import { buildAiMessage, addMessage } from '@/db/useMessagesRepo'
-import { getCurSession } from './workspace'
+import { updateSession } from '@/db/useSessionsRepo'
 
 async function chatWriter(messages: Message[]) {
   try {
@@ -11,6 +11,8 @@ async function chatWriter(messages: Message[]) {
     if (curSession.value) {
       // 生成ai回复的占位内容
       const lastAiMsg = setLastAiMsg(buildAiMessage(curSession.value.id, 0, '', true))
+
+      const msg = messages.slice(-curSession.value.config.history)
 
       const url = 'http://127.0.0.1:3307/rpg-mt/chat/writer'
       fetchEventSource(url, {
@@ -20,13 +22,13 @@ async function chatWriter(messages: Message[]) {
         },
         openWhenHidden: true,
         body: JSON.stringify({
-          model: 'glm-4.5-flash',
-          sys_prompt: '你是一个乐于助人的智能助理。',
-          messages,
-          temperature: 0.9,
-          max_tokens: 4096,
+          model: curSession.value.config.writerModel.model,
+          sys_prompt: curSession.value.config.sysPrompt,
+          messages: msg,
+          temperature: curSession.value.config.writerModel.temperature,
+          max_tokens: curSession.value.config.writerModel.maxTokens,
           streaming: true,
-          instruction: '请根据以下剧情，生成一个剧情',
+          instruction: curSession.value.config.instructionPrompt,
         }),
         async onopen(response) {
           console.log('open', response)
@@ -56,7 +58,8 @@ async function chatWriter(messages: Message[]) {
         },
         async onclose() {
           console.log('close')
-          addLastAiMsgToDb(lastAiMsg)
+          await addLastAiMsgToDb(lastAiMsg)
+          await updateCurSessionTurn()
         },
       })
     }
@@ -72,6 +75,17 @@ async function addLastAiMsgToDb(lastAiMsg: Ref<Message | null>) {
     const newMsg = { ...lastAiMsg.value }
     setLastAiMsg(null)
     await addMessage(newMsg)
+  }
+}
+
+async function updateCurSessionTurn() {
+  const curSession = getCurSession()
+  if (curSession.value) {
+    curSession.value.turn++
+    await updateSession(curSession.value.id, {
+      turn: curSession.value.turn,
+      updatedAt: Date.now(),
+    })
   }
 }
 

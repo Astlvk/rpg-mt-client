@@ -12,6 +12,8 @@
         </div>
 
         <div class="chat-actions">
+          <el-text>回合：{{ curSession?.turn }}</el-text>
+          <el-divider direction="vertical" />
           <el-button type="text" @click="openSessionConfig = true">
             <el-icon><Setting /></el-icon>
             设置
@@ -85,6 +87,7 @@ const openSessionConfig = ref(false)
 
 .chat-actions {
   display: flex;
+  align-items: center;
   gap: 10px;
 }
 </style>

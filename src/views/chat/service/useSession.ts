@@ -11,6 +11,7 @@ import {
 } from '@/db/useSessionsRepo'
 import { deleteMessagesBySessionId } from '@/db/useMessagesRepo'
 import { setCurSession, getCurSession, setAutoScrollEnabled } from './workspace'
+import { RetrieverCategory, RetrieverType, SearchMode, ZhipuAIModel } from '@/schema/enum'
 import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
 
 export function useSession() {
@@ -92,6 +93,39 @@ export function useSession() {
     const newSession = {
       id: getUUID(),
       title: '新的会话',
+      turn: 0,
+      config: {
+        apiKey: '',
+        baseUrl: '',
+        sysPrompt: '',
+        instructionPrompt: '',
+        summaryPrompt: '',
+        queryExtractPrompt: '',
+        writerModel: {
+          model: ZhipuAIModel.GLM45FLASH,
+          temperature: 0.9,
+          maxTokens: 65536,
+        },
+        summaryModel: {
+          model: ZhipuAIModel.GLM45FLASH,
+          temperature: 0.5,
+          maxTokens: 65536,
+        },
+        retrieverModel: {
+          model: ZhipuAIModel.GLM45FLASH,
+          temperature: 0.5,
+          maxTokens: 65536,
+        },
+        topK: 5,
+        history: 10,
+        retrieverType: RetrieverType.SEMANTIC,
+        retrieverCategory: [RetrieverCategory.SUMMARY],
+        enableRetriever: true,
+        enableSummary: true,
+        searchMode: SearchMode.FORCE,
+        summaryTurn: 5,
+        distance: 0.5,
+      },
       createdAt: Date.now(),
       updatedAt: Date.now(),
     }

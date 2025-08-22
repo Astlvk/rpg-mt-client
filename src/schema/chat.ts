@@ -14,11 +14,14 @@ interface ModelConfig {
   temperature: number // 温度
   maxTokens: number // 最大token
 }
+
 interface SessionConfig {
+  apiKey?: string // api key
+  baseUrl?: string // base url
   writerModel: ModelConfig
   summaryModel: ModelConfig
   retrieverModel: ModelConfig
-  history?: number // 携带的历史消息数量
+  history: number // 携带的历史消息数量
   topK: number // 召回数量
   distance: number // 距离
   sysPrompt: string // 系统提示词
@@ -37,8 +40,8 @@ interface Session extends BaseEntity {
   id: string // uuid
   title: string // 标题
   avatar?: string // 头像
-  turn?: number // 当前对话轮次
-  config?: SessionConfig // 会话配置
+  turn: number // 当前对话轮次
+  config: SessionConfig // 会话配置
   lastMsg?: string // 最后消息
   lastMsgTime?: string // 最后消息时间，时间戳
 }

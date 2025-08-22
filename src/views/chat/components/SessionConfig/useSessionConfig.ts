@@ -9,7 +9,7 @@ export function useSessionConfig() {
   const curSession = getCurSession()
   const formRef = ref<FormInstance>()
 
-  const activeNames = ref(['base', 'model', 'summary', 'retriever'])
+  const activeNames = ref(['base', 'model', 'prompt', 'summary', 'retriever'])
   const activeNameTab = ref<ModelConfigType>('writerModel')
 
   const modelOptions = [
@@ -40,29 +40,25 @@ export function useSessionConfig() {
   const form = reactive<SessionForm>({
     title: '',
     config: {
+      apiKey: '',
+      baseUrl: '',
       sysPrompt: '',
       instructionPrompt: '',
       summaryPrompt: '',
       queryExtractPrompt: '',
       writerModel: {
         model: ZhipuAIModel.GLM45FLASH,
-        apiKey: '',
-        baseUrl: '',
         temperature: 0.9,
         maxTokens: 65536,
       },
       summaryModel: {
         model: ZhipuAIModel.GLM45FLASH,
-        apiKey: '',
-        baseUrl: '',
-        temperature: 0.9,
+        temperature: 0.5,
         maxTokens: 65536,
       },
       retrieverModel: {
         model: ZhipuAIModel.GLM45FLASH,
-        apiKey: '',
-        baseUrl: '',
-        temperature: 0.9,
+        temperature: 0.5,
         maxTokens: 65536,
       },
       topK: 5,
@@ -78,14 +74,14 @@ export function useSessionConfig() {
   })
   const rules = ref({
     title: [{ required: true, message: '请输入会话名称', trigger: 'blur' }],
-    'config.writerModel.apiKey': [{ required: true, message: '请输入API Key', trigger: 'blur' }],
-    'config.writerModel.baseUrl': [{ required: true, message: '请输入Base URL', trigger: 'blur' }],
-    'config.retrieverModel.apiKey': [{ required: true, message: '请输入API Key', trigger: 'blur' }],
-    'config.retrieverModel.baseUrl': [
-      { required: true, message: '请输入Base URL', trigger: 'blur' },
-    ],
-    'config.summaryModel.apiKey': [{ required: true, message: '请输入API Key', trigger: 'blur' }],
-    'config.summaryModel.baseUrl': [{ required: true, message: '请输入Base URL', trigger: 'blur' }],
+    // 'config.writerModel.apiKey': [{ required: true, message: '请输入API Key', trigger: 'blur' }],
+    // 'config.writerModel.baseUrl': [{ required: true, message: '请输入Base URL', trigger: 'blur' }],
+    // 'config.retrieverModel.apiKey': [{ required: true, message: '请输入API Key', trigger: 'blur' }],
+    // 'config.retrieverModel.baseUrl': [
+    //   { required: true, message: '请输入Base URL', trigger: 'blur' },
+    // ],
+    // 'config.summaryModel.apiKey': [{ required: true, message: '请输入API Key', trigger: 'blur' }],
+    // 'config.summaryModel.baseUrl': [{ required: true, message: '请输入Base URL', trigger: 'blur' }],
   })
 
   function init() {
@@ -106,6 +102,10 @@ export function useSessionConfig() {
         try {
           // 获取下原始对象，不然响应式对象无法入库（报错无法clone）
           const rawForm = toRaw(form)
+          rawForm.config.writerModel = toRaw(rawForm.config.writerModel)
+          rawForm.config.retrieverModel = toRaw(rawForm.config.retrieverModel)
+          rawForm.config.summaryModel = toRaw(rawForm.config.summaryModel)
+
           await updateSession(curSession.value.id, {
             title: rawForm.title,
             // 笑死，这里直接传rawForm.config也会导致form.config === curSession.value.config

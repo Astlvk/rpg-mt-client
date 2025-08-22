@@ -18,6 +18,57 @@
               <el-input v-model="form.title" />
             </el-form-item>
 
+            <el-form-item label="历史消息数量" prop="config.history">
+              <el-input-number v-model="form.config.history" :min="1" :max="100" />
+            </el-form-item>
+          </el-collapse-item>
+
+          <el-collapse-item title="模型设置" name="model">
+            <el-form-item label="API Key" :prop="`config.apiKey`">
+              <el-input v-model="form.config.apiKey" />
+            </el-form-item>
+
+            <el-form-item label="Base URL" :prop="`config.baseUrl`">
+              <el-input v-model="form.config.baseUrl" />
+            </el-form-item>
+
+            <div style="display: flex">
+              <div style="flex: 1">
+                <template v-for="item in modelConfigTypes" :key="item">
+                  <div v-show="item === activeNameTab">
+                    <el-form-item label="模型" :prop="`config.${item}.model`">
+                      <el-select v-model="form.config[item].model" :options="modelOptions" />
+                    </el-form-item>
+
+                    <el-form-item label="温度" :prop="`config.${item}.temperature`">
+                      <el-slider
+                        v-model="form.config[item].temperature"
+                        :min="0"
+                        :max="1"
+                        :step="0.01"
+                      />
+                    </el-form-item>
+
+                    <el-form-item label="最大token" :prop="`config.${item}.maxTokens`">
+                      <el-input-number
+                        v-model="form.config[item].maxTokens"
+                        :min="1"
+                        :max="65536"
+                      />
+                    </el-form-item>
+                  </div>
+                </template>
+              </div>
+
+              <el-tabs v-model="activeNameTab" tab-position="left">
+                <el-tab-pane label="写作模型" name="writerModel" />
+                <el-tab-pane label="检索模型" name="retrieverModel" />
+                <el-tab-pane label="摘要模型" name="summaryModel" />
+              </el-tabs>
+            </div>
+          </el-collapse-item>
+
+          <el-collapse-item title="提示设置" name="prompt">
             <el-form-item label="系统提示词" prop="config.sysPrompt">
               <MdEditor
                 v-model="form.config.sysPrompt"
@@ -37,47 +88,6 @@
                 placeholder="指令提示词，用于指示每次AI如何生成内容"
               />
             </el-form-item>
-
-            <el-form-item label="历史消息数量" prop="config.history">
-              <el-input-number v-model="form.config.history" :min="1" :max="100" />
-            </el-form-item>
-          </el-collapse-item>
-
-          <el-collapse-item title="模型设置" name="model">
-            <el-tabs v-model="activeNameTab" type="card">
-              <el-tab-pane label="写作模型" name="writerModel" />
-              <el-tab-pane label="检索模型" name="retrieverModel" />
-              <el-tab-pane label="摘要模型" name="summaryModel" />
-            </el-tabs>
-
-            <template v-for="item in modelConfigTypes" :key="item">
-              <div v-show="item === activeNameTab">
-                <el-form-item label="API Key" :prop="`config.${item}.apiKey`">
-                  <el-input v-model="form.config[item].apiKey" />
-                </el-form-item>
-
-                <el-form-item label="Base URL" :prop="`config.${item}.baseUrl`">
-                  <el-input v-model="form.config[item].baseUrl" />
-                </el-form-item>
-
-                <el-form-item label="模型" :prop="`config.${item}.model`">
-                  <el-select v-model="form.config[item].model" :options="modelOptions" />
-                </el-form-item>
-
-                <el-form-item label="温度" :prop="`config.${item}.temperature`">
-                  <el-slider
-                    v-model="form.config[item].temperature"
-                    :min="0"
-                    :max="1"
-                    :step="0.01"
-                  />
-                </el-form-item>
-
-                <el-form-item label="最大token" :prop="`config.${item}.maxTokens`">
-                  <el-input-number v-model="form.config[item].maxTokens" :min="1" :max="65536" />
-                </el-form-item>
-              </div>
-            </template>
           </el-collapse-item>
 
           <el-collapse-item title="摘要设置" name="summary">
