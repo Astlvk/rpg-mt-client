@@ -64,6 +64,7 @@ export function useSessionConfig() {
       instructionPrompt: '',
       summaryPrompt: '',
       queryExtractPrompt: '',
+      firstAiMsg: '',
       writerModel: {
         model: '',
         temperature: 0.9,
@@ -147,6 +148,10 @@ export function useSessionConfig() {
     }
   }
 
+  async function generateFirstAiMsg() {
+    //
+  }
+
   return {
     curSession,
     modelOptions,
@@ -159,7 +164,8 @@ export function useSessionConfig() {
     formRef,
     form,
     rules,
-    save,
     init,
+    save,
+    generateFirstAiMsg,
   }
 }

@@ -1,5 +1,5 @@
 import { fetchData } from './request'
-import type { SummaryRequest, RespModel } from '@/schema/base.api'
+import type { SummaryRequest, RespModel, ChatBaseModel } from '@/schema/base.api'
 import type { SummaryItem } from '@/schema/summary'
 
 // 新增租户
@@ -76,5 +76,14 @@ export function searchSummary(
       distance,
       k,
     },
+  })
+}
+
+// 基础chat接口
+export function chat(data: ChatBaseModel) {
+  return fetchData<{ message: string; content: string }>({
+    url: '/rpg-mt/chat/base',
+    method: 'post',
+    data,
   })
 }

@@ -2,10 +2,10 @@
   <div class="res-list">
     <template v-for="item in summaryList" :key="item.uuid">
       <div class="item">
-        <el-card shadow="hover" style="height: 320px">
+        <el-card class="card" shadow="hover" style="height: 320px">
           <template #header>
             <div class="card-header">
-              <span>摘要</span>
+              <el-text type="info" size="small">更新时间：{{ item.updated_at }}</el-text>
               <el-button type="primary" link @click="handleView(item.summary)">查看</el-button>
             </div>
           </template>
@@ -13,7 +13,10 @@
           <el-text line-clamp="8">{{ item.summary }}</el-text>
 
           <template #footer>
-            <el-text type="info" size="small">更新时间：{{ item.updated_at }}</el-text>
+            <div class="card-footer">
+              <el-text type="info" size="small">distance：{{ item.distance }}</el-text>
+              <el-text type="info" size="small">score：{{ item.score }}</el-text>
+            </div>
           </template>
         </el-card>
       </div>
@@ -60,12 +63,29 @@ const handleView = (val: string) => {
     padding: 5px;
     box-sizing: border-box;
     width: 25%;
-  }
 
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    .card {
+      height: 320px;
+      display: flex;
+      flex-direction: column;
+
+      :deep(.el-card__body) {
+        flex: 1;
+        overflow-y: auto;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .card-footer {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+    }
   }
 
   .summary-con {

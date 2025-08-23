@@ -1,7 +1,12 @@
 <template>
   <div class="memo-search">
     <div class="search-bar">
-      <el-input v-model="search" placeholder="搜索内容" style="width: 300px" />
+      <el-input
+        v-model="search"
+        placeholder="搜索内容"
+        style="width: 300px"
+        @keyup.enter="handleSearch"
+      />
 
       <el-select v-model="searchType" placeholder="请选择搜索类型" style="width: 100px">
         <el-option label="关键字" value="keyword" />

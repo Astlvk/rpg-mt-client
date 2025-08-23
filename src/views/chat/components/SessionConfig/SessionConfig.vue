@@ -12,7 +12,7 @@
       @close="handleClose"
     >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
-        <el-collapse v-model="activeNames">
+        <el-collapse v-model="activeNames" accordion>
           <el-collapse-item title="基础设置" name="base">
             <el-form-item label="会话名称" prop="title">
               <el-input v-model="form.title" placeholder="会话名称" />
@@ -106,6 +106,19 @@
                 :toolbars="toolbars"
                 style="height: 200px"
                 placeholder="指令提示词，用于指示每次AI如何生成内容"
+              />
+            </el-form-item>
+
+            <el-form-item label="AI开场白" prop="config.firstAiMsg">
+              <div style="width: 100%; text-align: right">
+                <el-button type="primary" link @click="handleGenerateFirstAiMsg"> 生成 </el-button>
+              </div>
+              <MdEditor
+                v-model="form.config.firstAiMsg"
+                :preview="false"
+                :toolbars="toolbars"
+                style="height: 200px"
+                placeholder="可选的，输入AI开场白"
               />
             </el-form-item>
           </el-collapse-item>
@@ -238,6 +251,7 @@ const {
   rules,
   save,
   init,
+  generateFirstAiMsg,
 } = useSessionConfig()
 const toolbars: ToolbarNames[] = [
   'pageFullscreen',
@@ -285,5 +299,9 @@ function handleClose() {
 
 function handleSave() {
   save()
+}
+
+function handleGenerateFirstAiMsg() {
+  generateFirstAiMsg()
 }
 </script>

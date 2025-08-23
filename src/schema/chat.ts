@@ -27,6 +27,7 @@ interface SessionConfig {
   sysPrompt: string // 系统提示词
   instructionPrompt: string // 指令提示词
   summaryPrompt: string // 摘要提示词
+  firstAiMsg: string // 第一轮ai消息（开场白）
   queryExtractPrompt: string // 搜索词提取提示词
   retrieverType: RetrieverType // 召回方式
   retrieverCategory: RetrieverCategory[] // 召回类别

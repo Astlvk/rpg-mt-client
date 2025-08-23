@@ -6,7 +6,7 @@ interface RespModel<T> {
   data: T[]
 }
 
-interface SummaryRequest {
+interface ChatBaseModel {
   model: string
   api_key: string
   base_url: string
@@ -15,8 +15,11 @@ interface SummaryRequest {
   temperature: number
   max_tokens: number
   streaming: boolean
+}
+
+interface SummaryRequest extends ChatBaseModel {
   summary_prompt: string
   tenant_name: string
 }
 
-export type { SummaryRequest, RespModel }
+export type { ChatBaseModel, SummaryRequest, RespModel }
