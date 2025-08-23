@@ -1,7 +1,7 @@
 <template>
   <div class="chat-interface">
     <!-- 左侧会话列表 -->
-    <ChatSession />
+    <ChatSession style="width: 250px" />
 
     <!-- 右侧聊天主界面 -->
     <div class="chat-main">
@@ -23,7 +23,7 @@
             <el-icon><Setting /></el-icon>
             设置
           </el-button>
-          <el-button type="text" disabled>
+          <el-button type="text" @click="openMemoMgt = true">
             <el-icon><Memo /></el-icon>
             记忆
           </el-button>
@@ -44,6 +44,8 @@
     </div>
 
     <SessionConfig v-model="openSessionConfig" />
+
+    <MemoMgt v-model="openMemoMgt" :tenantName="curSession?.id" />
   </div>
 </template>
 
@@ -55,10 +57,12 @@ import ChatMsg from './ChatMsg.vue'
 import ChatSession from './ChatSession.vue'
 import ChatInput from './ChatInput.vue'
 import SessionConfig from './components/SessionConfig/SessionConfig.vue'
+import MemoMgt from './components/MemoMgt/MenoMgt.vue'
 
 const curSession = getCurSession()
-const openSessionConfig = ref(false)
 const summaryLoading = getSummaryLoading()
+const openSessionConfig = ref(false)
+const openMemoMgt = ref(false)
 </script>
 
 <style lang="postcss" scoped>
@@ -70,7 +74,8 @@ const summaryLoading = getSummaryLoading()
 
 /* 右侧聊天主界面 */
 .chat-main {
-  flex: 1;
+  height: 100%;
+  width: calc(100% - 250px);
   display: flex;
   flex-direction: column;
   background-color: #fff;

@@ -9,8 +9,9 @@ const request = axios.create({
 })
 
 // 获取填充数据
-export async function fetchData(config: AxiosRequestConfig) {
-  await request(config)
+export async function fetchData<T>(config: AxiosRequestConfig) {
+  const res = await request<T>(config)
+  return res.data
 }
 
 export { request }

@@ -1,8 +1,8 @@
 <template>
-  <div class="chat-left">
+  <div class="chat-session">
     <div class="sidebar-header">
       <h2>RPG-MT</h2>
-      <el-button type="primary" :icon="Plus" @click="handleCreateSession"> 新的会话 </el-button>
+      <el-button type="primary" :icon="Plus" size="small" @click="handleCreateSession" />
     </div>
 
     <div class="chat-list">
@@ -24,10 +24,10 @@
           <div class="chat-preview">{{ chat.lastMsg }}</div>
           <div class="chat-time">{{ dayjs(chat.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</div>
         </div>
-        <el-button type="danger" :icon="Delete" size="small" @click.stop="handleDel(chat.id)" />
+        <el-button type="danger" link :icon="Delete" @click.stop="handleDel(chat.id)" />
       </div>
 
-      <el-empty description="暂无世界" v-if="sessions?.length === 0" />
+      <el-empty description="暂无会话" v-if="sessions?.length === 0" />
     </div>
   </div>
 </template>
@@ -47,8 +47,7 @@ const { sessions, curSession, init, handleSelectSession, handleCreateSession, ha
 </script>
 
 <style lang="postcss" scoped>
-.chat-left {
-  width: 300px;
+.chat-session {
   background-color: #fff;
   border-right: 1px solid #e4e7ed;
   display: flex;

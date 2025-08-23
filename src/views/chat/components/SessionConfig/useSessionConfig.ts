@@ -54,7 +54,7 @@ export function useSessionConfig() {
     { label: 'Agent检索', value: SearchMode.AGENT },
   ]
   // 模型配置
-  const modelConfigTypes: ModelConfigType[] = ['writerModel', 'retrieverModel', 'summaryModel']
+  const modelConfigTypes: ModelConfigType[] = ['writerModel', 'summaryModel', 'retrieverModel']
   const form = reactive<SessionForm>({
     title: '',
     config: {
@@ -65,17 +65,17 @@ export function useSessionConfig() {
       summaryPrompt: '',
       queryExtractPrompt: '',
       writerModel: {
-        model: ZhipuAIModel.GLM45FLASH,
+        model: '',
         temperature: 0.9,
         maxTokens: 65536,
       },
       summaryModel: {
-        model: ZhipuAIModel.GLM45FLASH,
+        model: '',
         temperature: 0.5,
         maxTokens: 65536,
       },
       retrieverModel: {
-        model: ZhipuAIModel.GLM45FLASH,
+        model: '',
         temperature: 0.5,
         maxTokens: 65536,
       },
@@ -108,6 +108,9 @@ export function useSessionConfig() {
       // 赋值的时候解除引用关系，避免formRef.value?.resetFields()时，curSession.value.config受影响
       if (curSession.value.config) {
         form.config = { ...curSession.value.config }
+        form.config.writerModel = { ...curSession.value.config.writerModel }
+        form.config.summaryModel = { ...curSession.value.config.summaryModel }
+        form.config.retrieverModel = { ...curSession.value.config.retrieverModel }
         form.config.retrieverCategory = [...curSession.value.config.retrieverCategory]
       }
     }

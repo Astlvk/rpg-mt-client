@@ -64,7 +64,7 @@
                       <el-slider
                         v-model="form.config[item].temperature"
                         :min="0"
-                        :max="1"
+                        :max="2"
                         :step="0.01"
                       />
                     </el-form-item>
@@ -82,8 +82,8 @@
 
               <el-tabs v-model="activeNameTab" tab-position="left">
                 <el-tab-pane label="写作模型" name="writerModel" />
-                <el-tab-pane label="检索模型" name="retrieverModel" />
                 <el-tab-pane label="摘要模型" name="summaryModel" />
+                <el-tab-pane label="检索模型" name="retrieverModel" />
               </el-tabs>
             </div>
           </el-collapse-item>

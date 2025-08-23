@@ -1,5 +1,11 @@
 import type { Message } from './chat'
 
+// 分页数据接口响应模型
+interface RespModel<T> {
+  total: number
+  data: T[]
+}
+
 interface SummaryRequest {
   model: string
   api_key: string
@@ -13,8 +19,4 @@ interface SummaryRequest {
   tenant_name: string
 }
 
-interface SummaryResponse {
-  summary: string
-}
-
-export type { SummaryRequest, SummaryResponse }
+export type { SummaryRequest, RespModel }
