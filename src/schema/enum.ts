@@ -25,8 +25,8 @@ enum Role {
 }
 
 // 召回方式，语义搜索，混合检索
-enum RetrieverType {
-  SEMANTIC = 'semantic',
+enum RetrieverMode {
+  SIMILARITY = 'similarity',
   HYBRID = 'hybrid',
 }
 
@@ -44,4 +44,4 @@ enum SearchMode {
   AGENT = 'agent',
 }
 
-export { Model, ZhipuAIModel, DeepSeekModel, Role, RetrieverType, RetrieverCategory, SearchMode }
+export { Model, ZhipuAIModel, DeepSeekModel, Role, RetrieverMode, RetrieverCategory, SearchMode }

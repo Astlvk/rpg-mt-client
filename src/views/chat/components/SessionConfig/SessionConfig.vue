@@ -160,9 +160,9 @@
               </el-checkbox-group>
             </el-form-item>
 
-            <el-form-item label="召回方式" prop="config.retrieverType">
-              <el-radio-group v-model="form.config.retrieverType">
-                <template v-for="item in retrieverTypeOptions" :key="item.value">
+            <el-form-item label="召回方式" prop="config.retrieverMode">
+              <el-radio-group v-model="form.config.retrieverMode">
+                <template v-for="item in retrieverModeOptions" :key="item.value">
                   <el-radio :label="item.label" :value="item.value" />
                 </template>
               </el-radio-group>
@@ -189,18 +189,22 @@
 
               <el-radio-group v-model="form.config.searchMode">
                 <template v-for="item in searchModeOptions" :key="item.value">
-                  <el-radio :label="item.label" :value="item.value" />
+                  <el-radio
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="item.value === SearchMode.FORCE"
+                  />
                 </template>
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="检索词提取" prop="config.queryExtractPrompt">
+            <el-form-item label="检索提示词" prop="config.queryExtractPrompt">
               <MdEditor
                 v-model="form.config.queryExtractPrompt"
                 :preview="false"
                 :toolbars="toolbars"
                 style="height: 200px"
-                placeholder="用于提取检索词的提示词"
+                placeholder="可为空，用于指示AI如何使用记忆检索工具检索历史记忆"
               />
             </el-form-item>
           </el-collapse-item>
@@ -217,7 +221,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { RetrieverCategory } from '@/schema/enum'
+import { RetrieverCategory, SearchMode } from '@/schema/enum'
 import { useSessionConfig } from './useSessionConfig'
 import { QuestionFilled } from '@element-plus/icons-vue'
 import { MdEditor, type ToolbarNames } from 'md-editor-v3'
@@ -241,7 +245,7 @@ const open = computed({
 const {
   formRef,
   modelOptions,
-  retrieverTypeOptions,
+  retrieverModeOptions,
   retrieverCategoryOptions,
   searchModeOptions,
   modelConfigTypes,

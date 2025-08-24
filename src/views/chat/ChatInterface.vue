@@ -19,11 +19,11 @@
           </div>
           <el-text>回合：{{ curSession?.turn }}</el-text>
           <el-divider direction="vertical" />
-          <el-button type="text" @click="openSessionConfig = true">
+          <el-button type="text" :disabled="!curSession" @click="openSessionConfig = true">
             <el-icon><Setting /></el-icon>
             设置
           </el-button>
-          <el-button type="text" @click="openMemoMgt = true">
+          <el-button type="text" :disabled="!curSession" @click="openMemoMgt = true">
             <el-icon><Memo /></el-icon>
             记忆
           </el-button>

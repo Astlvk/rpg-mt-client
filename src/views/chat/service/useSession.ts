@@ -11,7 +11,7 @@ import {
 } from '@/db/useSessionsRepo'
 import { deleteMessagesBySessionId } from '@/db/useMessagesRepo'
 import { setCurSession, getCurSession, setAutoScrollEnabled } from './workspace'
-import { RetrieverCategory, RetrieverType, SearchMode } from '@/schema/enum'
+import { RetrieverCategory, RetrieverMode, SearchMode } from '@/schema/enum'
 import { ElMessage, ElMessageBox, ElLoading } from 'element-plus'
 
 export function useSession() {
@@ -120,11 +120,11 @@ export function useSession() {
         },
         topK: 5,
         history: 10,
-        retrieverType: RetrieverType.SEMANTIC,
+        retrieverMode: RetrieverMode.SIMILARITY,
         retrieverCategory: [RetrieverCategory.SUMMARY],
         enableRetriever: true,
         enableSummary: true,
-        searchMode: SearchMode.FORCE,
+        searchMode: SearchMode.AGENT,
         summaryTurn: 5,
         distance: 0.5,
       },

@@ -1,4 +1,5 @@
-import { Role, RetrieverType, RetrieverCategory, SearchMode } from './enum'
+import { Role, RetrieverMode, RetrieverCategory, SearchMode } from './enum'
+import type { SummaryItem } from './summary'
 
 interface BaseEntity {
   createdAt: number // 创建时间，时间戳
@@ -29,7 +30,7 @@ interface SessionConfig {
   summaryPrompt: string // 摘要提示词
   firstAiMsg: string // 第一轮ai消息（开场白）
   queryExtractPrompt: string // 搜索词提取提示词
-  retrieverType: RetrieverType // 召回方式
+  retrieverMode: RetrieverMode // 召回方式
   retrieverCategory: RetrieverCategory[] // 召回类别
   enableRetriever: boolean // 启用召回
   enableSummary: boolean // 启用摘要
@@ -58,6 +59,7 @@ interface Message extends BaseEntity {
   turn: number // 当前对话轮次
   role: Role
   content: string // 文本（可选：分块/压缩）
+  docs?: SummaryItem[] // 检索到的摘要
   loading?: boolean // 流式生成中：true；完成后：false
 }
 

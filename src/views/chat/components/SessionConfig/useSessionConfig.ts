@@ -3,7 +3,7 @@ import { ref, reactive, toRaw } from 'vue'
 import {
   ZhipuAIModel,
   DeepSeekModel,
-  RetrieverType,
+  RetrieverMode,
   RetrieverCategory,
   SearchMode,
 } from '@/schema/enum'
@@ -39,9 +39,9 @@ export function useSessionConfig() {
     },
   ]
   // 召回方式
-  const retrieverTypeOptions = [
-    { label: '语义搜索', value: RetrieverType.SEMANTIC },
-    { label: '混合检索', value: RetrieverType.HYBRID },
+  const retrieverModeOptions = [
+    { label: '语义搜索', value: RetrieverMode.SIMILARITY },
+    { label: '混合检索', value: RetrieverMode.HYBRID },
   ]
   // 召回类别
   const retrieverCategoryOptions = [
@@ -82,7 +82,7 @@ export function useSessionConfig() {
       },
       topK: 5,
       history: 10,
-      retrieverType: RetrieverType.SEMANTIC,
+      retrieverMode: RetrieverMode.SIMILARITY,
       retrieverCategory: [RetrieverCategory.SUMMARY],
       enableRetriever: true,
       enableSummary: true,
@@ -155,7 +155,7 @@ export function useSessionConfig() {
   return {
     curSession,
     modelOptions,
-    retrieverTypeOptions,
+    retrieverModeOptions,
     retrieverCategoryOptions,
     searchModeOptions,
     modelConfigTypes,

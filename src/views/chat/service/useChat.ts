@@ -16,7 +16,7 @@ async function chatWriter(messages: Message[]) {
 
       const msgs = messages.slice(-curSession.value.config.history)
 
-      const url = 'http://127.0.0.1:3307/rpg-mt/chat/writer'
+      const url = 'http://127.0.0.1:3307/rpg-mt/chat/writer-agent'
       fetchEventSource(url, {
         method: 'POST',
         headers: {
@@ -33,6 +33,11 @@ async function chatWriter(messages: Message[]) {
           max_tokens: curSession.value.config.writerModel.maxTokens,
           streaming: true,
           instruction: curSession.value.config.instructionPrompt,
+          // 检索相关参数
+          tenant_name: curSession.value.id,
+          retriever_mode: curSession.value.config.retrieverMode,
+          distance: curSession.value.config.distance,
+          top_k: curSession.value.config.topK,
         }),
         async onopen(response) {
           console.log('open', response)
@@ -49,13 +54,18 @@ async function chatWriter(messages: Message[]) {
           }
           const data = JSON.parse(ev.data)
           if (lastAiMsg.value) {
-            lastAiMsg.value.content += data.content
-            scrollToBottom()
+            if (data.content) {
+              lastAiMsg.value.content += data.content
+              scrollToBottom()
+            }
+            if (data.docs) {
+              lastAiMsg.value.docs = data.docs
+            }
           }
         },
         onerror(err) {
           console.error('error', err)
-          ElMessage.error(err.message)
+          ElMessage.error('AI回复失败，详情请查看控制台输出')
           setLastAiMsg(null)
           throw err
         },
@@ -77,7 +87,13 @@ async function addLastAiMsgToDb(lastAiMsg: Ref<Message | null>) {
   if (lastAiMsg.value) {
     lastAiMsg.value.loading = false
     lastAiMsg.value.updatedAt = Date.now()
+    // 这里构建新的对象，避免响应式对无法存入数据库
     const newMsg = { ...lastAiMsg.value }
+    if (newMsg.docs) {
+      newMsg.docs = newMsg.docs.map((doc) => ({
+        ...doc,
+      }))
+    }
     setLastAiMsg(null)
     await addMessage(newMsg)
   }
