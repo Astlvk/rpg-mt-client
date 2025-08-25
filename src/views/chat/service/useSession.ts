@@ -125,6 +125,7 @@ export function useSession() {
         retrieverCategory: [RetrieverCategory.SUMMARY],
         enableRetriever: true,
         enableSummary: true,
+        updateSummary: false,
         searchMode: SearchMode.AGENT,
         summaryTurn: 5,
         distance: 0.5,

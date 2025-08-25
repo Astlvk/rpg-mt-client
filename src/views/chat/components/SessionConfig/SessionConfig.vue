@@ -8,6 +8,7 @@
       append-to-body
       destroy-on-close
       :z-index="1001"
+      :close-on-press-escape="false"
       @open="handleOpen"
       @close="handleClose"
     >
@@ -130,6 +131,10 @@
           <el-collapse-item title="摘要设置" name="summary">
             <el-form-item label="启用摘要" prop="config.enableSummary">
               <el-switch v-model="form.config.enableSummary" />
+            </el-form-item>
+
+            <el-form-item label="更新摘要" prop="config.updateSummary">
+              <el-switch v-model="form.config.updateSummary" :disabled="true" />
             </el-form-item>
 
             <el-form-item label="摘要提示" prop="config.summaryPrompt">

@@ -35,6 +35,7 @@ interface SessionConfig {
   retrieverCategory: RetrieverCategory[] // 召回类别
   enableRetriever: boolean // 启用召回
   enableSummary: boolean // 启用摘要
+  updateSummary: boolean // 更新摘要
   searchMode: SearchMode // 检索方式，强制检索，agent检索
   summaryTurn: number // 摘要轮数，1为每轮都启用，2为每两轮启用一次，以此类推
 }

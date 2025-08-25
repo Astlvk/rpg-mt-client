@@ -87,6 +87,7 @@ export function useSessionConfig() {
       retrieverCategory: [RetrieverCategory.SUMMARY],
       enableRetriever: true,
       enableSummary: true,
+      updateSummary: false,
       searchMode: SearchMode.FORCE,
       summaryTurn: 5,
       distance: 0.5,
