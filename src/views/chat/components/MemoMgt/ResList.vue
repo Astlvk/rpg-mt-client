@@ -26,7 +26,7 @@
 
     <el-dialog v-model="open" title="摘要详情" width="50%">
       <div class="summary-con">
-        <MdPreview :modelValue="summary" />
+        <MdPreview :modelValue="summary" :codeFoldable="false" />
       </div>
     </el-dialog>
   </div>

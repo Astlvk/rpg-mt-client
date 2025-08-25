@@ -1,7 +1,7 @@
 // 创作接口返回的检索结果
 interface queryInfo {
   query: string
-  docs: SummaryItem[]
+  summaries: SummaryItem[]
 }
 
 interface SummaryItem {

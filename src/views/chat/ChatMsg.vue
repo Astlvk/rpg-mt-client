@@ -15,7 +15,7 @@
 
       <div class="msg-content">
         <div class="msg-text">
-          <MdPreview :modelValue="msg.content" />
+          <MdPreview :modelValue="msg.content" :codeFoldable="false" />
 
           <div v-if="msg.loading" class="msg-loading">
             <el-icon class="is-loading" size="16">
@@ -26,6 +26,14 @@
         </div>
         <div class="msg-time">
           {{ dayjs(msg.createdAt).format('YYYY-MM-DD HH:mm:ss') }}
+          <el-button
+            v-if="msg.docs && msg.docs.length > 0"
+            type="primary"
+            link
+            size="small"
+            :icon="Memo"
+            @click="handleMemo(msg)"
+          />
           <el-popconfirm
             title="确定删除该消息吗？"
             placement="left-start"
@@ -35,24 +43,37 @@
             @confirm="deleteMessageById(msg.id)"
           >
             <template #reference>
-              <el-button type="danger" link size="small" :icon="Delete" />
+              <el-button type="danger" link size="small" :icon="Delete" style="margin-left: 0px" />
             </template>
           </el-popconfirm>
         </div>
       </div>
     </div>
+
+    <el-dialog v-model="openMemo" title="检索内容" destroy-on-close fullscreen>
+      <MemoInfo :docs="curDocs" />
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import type { Message } from '@/schema/chat'
+import type { queryInfo } from '@/schema/summary'
+import { computed, watch, ref } from 'vue'
 import dayjs from 'dayjs'
 import { Role } from '@/schema/enum'
 import { getMessagesBySessionIdObservable, deleteMessageById } from '@/db/useMessagesRepo'
-import { msgContainer, scrollToBottom, getCurSession, getLastAiMsg } from './service/workspace'
-import { User, Service } from '@element-plus/icons-vue'
+import {
+  msgContainer,
+  scrollToBottom,
+  getCurSession,
+  getLastAiMsg,
+  enableAutoScroll,
+  disableAutoScroll,
+} from './service/workspace'
+import { User, Service, Loading, Delete, Memo } from '@element-plus/icons-vue'
 import { MdPreview } from 'md-editor-v3'
-import { Loading, Delete } from '@element-plus/icons-vue'
+import MemoInfo from './components/MemoMgt/MemoInfo.vue'
 
 const curSession = getCurSession()
 const lastAiMsg = getLastAiMsg()
@@ -71,9 +92,11 @@ const messages = computed(() => {
   }
   return res
 })
+const openMemo = ref(false)
+const curDocs = ref<queryInfo[]>([])
 
 watch(
-  () => messages.value,
+  () => messages.value.length,
   () => {
     scrollToBottom()
   },
@@ -81,9 +104,22 @@ watch(
 
 function handleScroll(e: Event) {
   const container = e.target as HTMLElement
-  if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
-    // setAutoScrollEnabled(false)
+  console.log(msgContainer.value === container)
+  // 检查用户是否滚动到底部
+  const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 20
+
+  if (isAtBottom) {
+    // 用户滚动到底部，启用自动滚动
+    enableAutoScroll()
+  } else {
+    // 用户手动滚动且不在底部，禁用自动滚动
+    disableAutoScroll()
   }
+}
+
+function handleMemo(msg: Message) {
+  openMemo.value = true
+  curDocs.value = msg.docs || []
 }
 </script>
 

@@ -50,7 +50,7 @@
           </div>
 
           <div class="content">
-            <MdPreview :modelValue="item.content" />
+            <MdPreview :modelValue="item.content" :codeFoldable="false" />
           </div>
         </div>
       </div>

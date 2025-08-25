@@ -1,12 +1,14 @@
 import { ref, nextTick } from 'vue'
+import { useThrottleFn } from '@vueuse/core'
 import { getSession } from '@/db/useSessionsRepo'
 import type { Session, Message } from '@/schema/chat'
 
 const curSession = ref<Session | null>(null)
 const lastAiMsg = ref<Message | null>(null)
 const msgContainer = ref<HTMLElement | null>(null)
-const autoScrollEnabled = ref(true)
+const isAutoScrollEnabled = ref(true)
 const summaryLoading = ref(false)
+const throttledScrollToBottom = useThrottleFn(scrollToBottom, 300)
 
 function setCurSession(session: Session | null) {
   curSession.value = session
@@ -37,7 +39,7 @@ function getLastAiMsg() {
 }
 
 function setAutoScrollEnabled(enabled: boolean) {
-  autoScrollEnabled.value = enabled
+  isAutoScrollEnabled.value = enabled
 }
 
 function getSummaryLoading() {
@@ -49,14 +51,23 @@ function setSummaryLoading(loading: boolean) {
 }
 
 function scrollToBottom() {
-  if (!autoScrollEnabled.value) {
-    return
+  if (isAutoScrollEnabled.value) {
+    nextTick(() => {
+      requestAnimationFrame(() => {
+        if (msgContainer.value) {
+          msgContainer.value.scrollTop = msgContainer.value.scrollHeight
+        }
+      })
+    })
   }
-  nextTick(() => {
-    if (msgContainer.value) {
-      msgContainer.value.scrollTop = msgContainer.value.scrollHeight
-    }
-  })
+}
+
+function enableAutoScroll() {
+  isAutoScrollEnabled.value = true
+}
+
+function disableAutoScroll() {
+  isAutoScrollEnabled.value = false
 }
 
 export {
@@ -64,6 +75,9 @@ export {
   getSummaryLoading,
   setSummaryLoading,
   scrollToBottom,
+  throttledScrollToBottom,
+  enableAutoScroll,
+  disableAutoScroll,
   setCurSession,
   getCurSession,
   setLastAiMsg,

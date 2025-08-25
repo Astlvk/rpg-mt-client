@@ -2,7 +2,12 @@ import { markRaw, type Ref } from 'vue'
 import { type Message } from '@/schema/chat'
 import { generateSummary } from '@/api/base.api'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
-import { getCurSession, setLastAiMsg, setSummaryLoading, scrollToBottom } from './workspace'
+import {
+  getCurSession,
+  setLastAiMsg,
+  setSummaryLoading,
+  throttledScrollToBottom,
+} from './workspace'
 import { buildAiMessage, addMessage } from '@/db/useMessagesRepo'
 import { updateSession } from '@/db/useSessionsRepo'
 import { ElMessage } from 'element-plus'
@@ -56,7 +61,7 @@ async function chatWriter(messages: Message[]) {
           if (lastAiMsg.value) {
             if (data.content) {
               lastAiMsg.value.content += data.content
-              scrollToBottom()
+              throttledScrollToBottom()
             }
             if (data.docs) {
               lastAiMsg.value.docs = markRaw(data.docs)
