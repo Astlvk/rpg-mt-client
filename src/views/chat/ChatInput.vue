@@ -1,8 +1,9 @@
 <template>
   <div class="chat-input">
     <div class="setting">
-      <label class="">深度思考</label>
-      <el-switch class="mr-[8px]" :active-value="false" :inactive-value="true" size="small" />
+      <!-- <label class="">深度思考</label> -->
+      <!-- <el-switch class="mr-[8px]" :active-value="false" :inactive-value="true" size="small" /> -->
+      <el-button type="primary" link :icon="MessageBox" @click="handleHistory">更多</el-button>
     </div>
 
     <div class="default-size">
@@ -11,8 +12,8 @@
         :rows="5"
         type="textarea"
         resize="none"
-        placeholder="enter发送，shift+enter或ctrl+enter换行"
-        @keydown="handleKeydown"
+        placeholder="ctrl+enter发送，enter或shift+enter换行"
+        @keydown.ctrl.enter="sendMsg"
       />
       <div class="btn">
         <!-- color="rgba(51, 97, 255, 1)" -->
@@ -27,7 +28,7 @@
         type="textarea"
         resize="none"
         placeholder="enter发送，shift+enter或ctrl+enter换行"
-        @keydown="handleKeydown"
+        @keydown.ctrl.enter="sendMsg"
       />
       <div class="btn">
         <el-button color="rgba(51, 97, 255, 1)" :icon="Position" size="small" @click="sendMsg">
@@ -35,6 +36,8 @@
         </el-button>
       </div>
     </div>
+
+    <MessageRecord v-model="open" :session-id="curSession?.id" />
   </div>
 </template>
 
@@ -45,21 +48,24 @@ import { ElMessage } from 'element-plus'
 import { addMessage, getMessagesBySessionId, buildUserMessage } from '@/db/useMessagesRepo'
 import { getCurSession, setAutoScrollEnabled } from './service/workspace'
 import { chatWriter } from './service/useChat'
+import { MessageBox } from '@element-plus/icons-vue'
+import MessageRecord from './components/MessageRecord.vue'
 
 const curSession = getCurSession()
 const inputPrompt = ref('')
+const open = ref(false)
 
-function handleKeydown(e: KeyboardEvent) {
-  if (e.key === 'Enter') {
-    if (e.shiftKey || e.ctrlKey) {
-      e.preventDefault()
-      inputPrompt.value += '\n'
-    } else {
-      e.preventDefault()
-      sendMsg()
-    }
-  }
-}
+// function handleKeydown(e: KeyboardEvent) {
+//   if (e.key === 'Enter') {
+//     if (e.shiftKey || e.ctrlKey) {
+//       e.preventDefault()
+//       inputPrompt.value += '\n'
+//     } else {
+//       e.preventDefault()
+//       sendMsg()
+//     }
+//   }
+// }
 
 async function sendMsg() {
   if (inputPrompt.value.trim() === '') {
@@ -71,6 +77,10 @@ async function sendMsg() {
     chatWriter(messages)
     inputPrompt.value = ''
   }
+}
+
+function handleHistory() {
+  open.value = true
 }
 
 async function buildMessages() {
@@ -113,7 +123,7 @@ async function buildMessages() {
 
   .setting {
     position: absolute;
-    top: 30px;
+    top: 5px;
     right: 25px;
     z-index: 1;
     display: flex;

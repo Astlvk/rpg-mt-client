@@ -1,5 +1,5 @@
 import { Role, RetrieverMode, RetrieverCategory, SearchMode } from './enum'
-import type { SummaryItem } from './summary'
+import type { queryInfo } from './summary'
 
 interface BaseEntity {
   createdAt: number // 创建时间，时间戳
@@ -22,6 +22,7 @@ interface SessionConfig {
   writerModel: ModelConfig
   summaryModel: ModelConfig
   retrieverModel: ModelConfig
+  windowMsgNum: number // 窗口消息数量
   history: number // 携带的历史消息数量
   topK: number // 召回数量
   distance: number // 距离
@@ -59,12 +60,12 @@ interface Message extends BaseEntity {
   turn: number // 当前对话轮次
   role: Role
   content: string // 文本（可选：分块/压缩）
-  docs?: SummaryItem[] // 检索到的摘要
+  docs?: queryInfo[] // 检索到的摘要
   loading?: boolean // 流式生成中：true；完成后：false
 }
 
-type MessagePatch = Partial<Omit<Message, 'id'>> & { updatedAt?: number }
+type MessagePatch = Partial<Omit<Message, 'id'>> & { updatedAt: number }
 
-type SessionPatch = Partial<Omit<Session, 'id'>> & { updatedAt?: number }
+type SessionPatch = Partial<Omit<Session, 'id'>> & { updatedAt: number }
 
 export type { Message, Session, SessionForm, MessagePatch, SessionPatch, ModelConfigType }

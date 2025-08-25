@@ -1,3 +1,9 @@
+// 创作接口返回的检索结果
+interface queryInfo {
+  query: string
+  docs: SummaryItem[]
+}
+
 interface SummaryItem {
   uuid: string
   summary: string
@@ -7,4 +13,4 @@ interface SummaryItem {
   updated_at: string
 }
 
-export type { SummaryItem }
+export type { SummaryItem, queryInfo }

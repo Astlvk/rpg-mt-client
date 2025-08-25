@@ -18,6 +18,10 @@
               <el-input v-model="form.title" placeholder="会话名称" />
             </el-form-item>
 
+            <el-form-item label="窗口消息数量" prop="config.windowMsgNum">
+              <el-input-number v-model="form.config.windowMsgNum" :min="1" :max="100" />
+            </el-form-item>
+
             <el-form-item label="历史消息数量" prop="config.history">
               <el-input-number v-model="form.config.history" :min="1" :max="100" />
             </el-form-item>

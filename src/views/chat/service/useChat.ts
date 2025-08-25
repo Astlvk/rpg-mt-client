@@ -1,4 +1,4 @@
-import type { Ref } from 'vue'
+import { markRaw, type Ref } from 'vue'
 import { type Message } from '@/schema/chat'
 import { generateSummary } from '@/api/base.api'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
@@ -59,7 +59,7 @@ async function chatWriter(messages: Message[]) {
               scrollToBottom()
             }
             if (data.docs) {
-              lastAiMsg.value.docs = data.docs
+              lastAiMsg.value.docs = markRaw(data.docs)
             }
           }
         },
@@ -89,11 +89,6 @@ async function addLastAiMsgToDb(lastAiMsg: Ref<Message | null>) {
     lastAiMsg.value.updatedAt = Date.now()
     // 这里构建新的对象，避免响应式对无法存入数据库
     const newMsg = { ...lastAiMsg.value }
-    if (newMsg.docs) {
-      newMsg.docs = newMsg.docs.map((doc) => ({
-        ...doc,
-      }))
-    }
     setLastAiMsg(null)
     await addMessage(newMsg)
   }

@@ -57,10 +57,15 @@ import { Loading, Delete } from '@element-plus/icons-vue'
 const curSession = getCurSession()
 const lastAiMsg = getLastAiMsg()
 // 函数返回的是一个ref对象，所以使用的时候需要主动.value，包装为computed只是为了响应式切换
-const messagesWrap = computed(() => getMessagesBySessionIdObservable(curSession.value?.id))
+const messagesWrap = computed(() =>
+  getMessagesBySessionIdObservable(
+    curSession.value?.id,
+    curSession.value?.config.windowMsgNum || 50,
+  ),
+)
 // 主动解包一层
 const messages = computed(() => {
-  const res = [...(messagesWrap.value.value || [])]
+  const res = [...(messagesWrap.value.value || [])].reverse()
   if (lastAiMsg.value) {
     res.push(lastAiMsg.value)
   }

@@ -119,6 +119,7 @@ export function useSession() {
           maxTokens: 8192,
         },
         topK: 5,
+        windowMsgNum: 50,
         history: 10,
         retrieverMode: RetrieverMode.SIMILARITY,
         retrieverCategory: [RetrieverCategory.SUMMARY],

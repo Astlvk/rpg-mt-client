@@ -5,7 +5,8 @@ const dbName = 'rpg-mt-db'
 const dbVersion = 1
 const dbSchema = {
   sessions: '&id, title, createdAt, updatedAt, lastMsgTime',
-  messages: '&id, sessionId, turn, role, createdAt, updatedAt, [sessionId+turn]',
+  messages:
+    '&id, sessionId, turn, role, createdAt, updatedAt, [sessionId+turn], [sessionId+createdAt]',
 }
 
 const db = new Dexie(dbName) as Dexie & {

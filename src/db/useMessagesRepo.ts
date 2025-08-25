@@ -1,23 +1,25 @@
 import { toRaw } from 'vue'
-import { liveQuery } from 'dexie'
+import { liveQuery, Dexie } from 'dexie'
 import { useObservable } from '@vueuse/rxjs'
 import { from } from 'rxjs'
 import { db } from './index'
 import { getUUID } from '@/utils'
 import { Role } from '@/schema/enum'
-import type { Message } from '@/schema/chat'
-
-// 按照createdAt时间升序排序
-const messages = useObservable(from(liveQuery(() => db.messages.orderBy('createdAt').toArray())))
+import type { Message, MessagePatch } from '@/schema/chat'
 
 // 新增消息
-function addMessage(message: Message) {
+function addMessage(message: Omit<Message, 'id'>) {
   return db.messages.add(toRaw(message))
 }
 
 // 更新消息
-function updateMessage(message: Message) {
+function putMessage(message: Message) {
   return db.messages.put(toRaw(message))
+}
+
+// 更新消息
+function updateMessage(id: string, patch: MessagePatch) {
+  return db.messages.update(id, toRaw(patch))
 }
 
 // 删除消息
@@ -52,15 +54,75 @@ function getMessagesBySessionId(sessionId: string) {
 }
 
 // 获取响应式的消息
-function getMessagesBySessionIdObservable(sessionId: string | undefined) {
+function getMessagesBySessionIdObservable(sessionId: string | undefined, limit: number = 5) {
   console.log('sessionId', sessionId)
   if (!sessionId) {
     // sessionId 不存在时返回空数组的响应式对象
     return useObservable(from(Promise.resolve<Message[]>([])))
   }
   return useObservable(
-    from(liveQuery(() => db.messages.where('sessionId').equals(sessionId).sortBy('createdAt'))),
+    from(
+      liveQuery(() =>
+        db.messages
+          .where('[sessionId+createdAt]')
+          .between([sessionId, Dexie.minKey], [sessionId, Dexie.maxKey])
+          .reverse()
+          .limit(limit)
+          .toArray(),
+      ),
+    ),
   )
+}
+
+// 获取指定会话的最新limit条消息，按createdAt倒序（最新在前）
+function getMessagesByLimit(sessionId: string, limit: number) {
+  // 这里需要reverse，保证最新的在前，便于和分页方向统一
+  return db.messages
+    .where('[sessionId+createdAt]')
+    .between([sessionId, Dexie.minKey], [sessionId, Dexie.maxKey])
+    .reverse()
+    .limit(limit)
+    .toArray()
+}
+
+// 游标分页：获取下一页（更旧的消息），不包含游标对应的数据
+async function nextPage(sessionId: string, beforeCursor: number, pageSize: number) {
+  // 必须严格小于游标，排除游标对应数据
+  const res = await db.messages
+    .where('[sessionId+createdAt]')
+    .between(
+      [sessionId, Dexie.minKey],
+      [sessionId, beforeCursor],
+      false, // 包含下界
+      false, // exclude upper，严格小于游标
+    )
+    .reverse() // 保证顺序与首页一致（最新在前）
+    .limit(pageSize)
+    .toArray()
+
+  return res
+}
+
+// 游标分页：获取上一页（更新的消息），不包含游标对应的数据
+async function prevPage(sessionId: string, afterCursor: number, pageSize: number) {
+  // 必须严格大于游标，排除游标对应数据
+  const res = await db.messages
+    .where('[sessionId+createdAt]')
+    .between(
+      [sessionId, afterCursor],
+      [sessionId, Dexie.maxKey],
+      false, // exclude lower，严格大于游标
+      false, // 包含上界
+    )
+    .limit(pageSize)
+    .toArray()
+
+  // 由于是createdAt升序，需要reverse成倒序（最新在前）
+  return res.reverse()
+}
+
+function getMessageCount(sessionId: string) {
+  return db.messages.where('sessionId').equals(sessionId).count()
 }
 
 // 删除该会话下的所有消息
@@ -106,8 +168,8 @@ function buildUserMessage(sessionId: string, turn: number, content: string): Mes
 }
 
 export {
-  messages,
   addMessage,
+  putMessage,
   updateMessage,
   deleteMessage,
   getMessage,
@@ -115,6 +177,10 @@ export {
   getMessagesBySessionId,
   getMessagesBySessionIdObservable,
   deleteMessagesBySessionId,
+  getMessagesByLimit,
+  prevPage,
+  nextPage,
+  getMessageCount,
   deleteMessageById,
   buildMessage,
   buildAiMessage,

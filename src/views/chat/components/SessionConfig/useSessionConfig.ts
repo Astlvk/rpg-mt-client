@@ -81,6 +81,7 @@ export function useSessionConfig() {
         maxTokens: 65536,
       },
       topK: 5,
+      windowMsgNum: 50,
       history: 10,
       retrieverMode: RetrieverMode.SIMILARITY,
       retrieverCategory: [RetrieverCategory.SUMMARY],
