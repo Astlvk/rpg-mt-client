@@ -38,6 +38,10 @@ export function useSessionConfig() {
         { label: 'GLM-4.5 Flash', value: ZhipuAIModel.GLM45FLASH },
       ],
     },
+    {
+      label: 'qwen',
+      options: [{ label: 'q4_k_m.gguf', value: 'q4_k_m.gguf' }],
+    },
   ]
   // 召回方式
   const retrieverModeOptions = [
