@@ -21,6 +21,10 @@ export function useSessionConfig() {
 
   const modelOptions = [
     {
+      label: 'qwen',
+      options: [{ label: 'q4_k_m.gguf', value: 'q4_k_m.gguf' }],
+    },
+    {
       label: 'deepseek',
       options: [
         { label: 'DeepSeek-Chat', value: DeepSeekModel.DEEPSEEK_CHAT },
@@ -37,10 +41,6 @@ export function useSessionConfig() {
         { label: 'GLM-4.5 AirX', value: ZhipuAIModel.GLM45AIRX },
         { label: 'GLM-4.5 Flash', value: ZhipuAIModel.GLM45FLASH },
       ],
-    },
-    {
-      label: 'qwen',
-      options: [{ label: 'q4_k_m.gguf', value: 'q4_k_m.gguf' }],
     },
   ]
   // 召回方式
