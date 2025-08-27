@@ -16,7 +16,10 @@ export function useSessionConfig() {
   const curSession = getCurSession()
   const formRef = ref<FormInstance>()
 
-  const activeNames = ref(['base', 'model', 'prompt', 'summary', 'retriever'])
+  const activeNames = ref([
+    'base',
+    // 'model', 'prompt', 'summary', 'retriever'
+  ])
   const activeNameTab = ref<ModelConfigType>('writerModel')
 
   const modelOptions = [

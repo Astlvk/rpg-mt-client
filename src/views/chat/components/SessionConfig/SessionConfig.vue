@@ -116,7 +116,9 @@
 
             <el-form-item label="AI开场白" prop="config.firstAiMsg">
               <div style="width: 100%; text-align: right">
-                <el-button type="primary" link @click="handleGenerateFirstAiMsg"> 生成 </el-button>
+                <el-button type="primary" link disabled @click="handleGenerateFirstAiMsg">
+                  生成
+                </el-button>
               </div>
               <MdEditor
                 v-model="form.config.firstAiMsg"
