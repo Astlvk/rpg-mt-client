@@ -63,6 +63,9 @@ async function chatWriter(messages: Message[]) {
             if (data.docs) {
               lastAiMsg.value.docs = markRaw(data.docs)
             }
+            if (data.usageMetadata) {
+              lastAiMsg.value.usageMetadata = markRaw(data.usageMetadata)
+            }
           }
         },
         onerror(err) {

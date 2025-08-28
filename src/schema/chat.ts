@@ -58,6 +58,12 @@ interface SessionForm {
   config: SessionConfig
 }
 
+interface UsageMetadata {
+  inputTokens?: number // 输入token
+  outputTokens?: number // 输出token
+  totalTokens?: number // 总token
+}
+
 interface Message extends BaseEntity {
   id: string // uuid
   sessionId: string // 会话id
@@ -65,6 +71,7 @@ interface Message extends BaseEntity {
   role: Role
   content: string // 文本（可选：分块/压缩）
   docs?: queryInfo[] // 检索到的摘要
+  usageMetadata?: UsageMetadata // 使用元数据
   loading?: boolean // 流式生成中：true；完成后：false
 }
 

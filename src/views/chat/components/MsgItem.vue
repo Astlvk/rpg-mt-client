@@ -21,6 +21,7 @@
           <span>生成中...</span>
         </div>
       </div>
+
       <div class="msg-time">
         {{ dayjs(msg.createdAt).format('YYYY-MM-DD HH:mm:ss') }}
         <el-button
@@ -31,6 +32,16 @@
           :icon="Memo"
           @click="handleMemo(msg)"
         />
+        <el-button
+          v-if="msg.usageMetadata"
+          :title="msg.usageMetadata"
+          :icon="Histogram"
+          type="primary"
+          link
+          size="small"
+          style="margin-left: 0px"
+        />
+
         <el-popconfirm
           v-if="!msg.id.includes(aiMsgIdPrefix)"
           title="确定删除该消息吗？"
@@ -55,7 +66,7 @@ import type { Message } from '@/schema/chat'
 import { Role } from '@/schema/enum'
 import dayjs from 'dayjs'
 import { MdPreview } from 'md-editor-v3'
-import { User, Service, Loading, Delete, Memo } from '@element-plus/icons-vue'
+import { User, Service, Loading, Delete, Memo, Histogram } from '@element-plus/icons-vue'
 
 defineProps({
   msg: {
