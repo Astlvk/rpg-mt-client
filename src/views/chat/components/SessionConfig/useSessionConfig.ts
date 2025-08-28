@@ -65,6 +65,7 @@ export function useSessionConfig() {
   const modelConfigTypes: ModelConfigType[] = ['writerModel', 'summaryModel', 'retrieverModel']
   const form = reactive<SessionForm>({
     title: '',
+    turn: 0,
     config: {
       apiKey: '',
       baseUrl: '',
@@ -118,6 +119,7 @@ export function useSessionConfig() {
   function init() {
     if (curSession.value) {
       form.title = curSession.value.title
+      form.turn = curSession.value.turn
       // 赋值的时候解除引用关系，避免formRef.value?.resetFields()时，curSession.value.config受影响
       if (curSession.value.config) {
         form.config = { ...curSession.value.config }
@@ -142,6 +144,7 @@ export function useSessionConfig() {
           // 持久化会话配置
           await updateSession(curSession.value.id, {
             title: rawForm.title,
+            turn: rawForm.turn,
             // 笑死，这里直接传rawForm.config也会导致form.config === curSession.value.config
             // 不好说是dexie官方推荐的vue响应式数据会复用对象还是dexie会复用对象
             config: structuredClone(rawForm.config),

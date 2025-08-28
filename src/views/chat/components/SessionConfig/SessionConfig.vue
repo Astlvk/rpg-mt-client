@@ -26,6 +26,10 @@
             <el-form-item label="历史消息数量" prop="config.history">
               <el-input-number v-model="form.config.history" :min="1" :max="100" />
             </el-form-item>
+
+            <el-form-item label="当前回合" prop="turn">
+              <el-input-number v-model="form.turn" :min="0" />
+            </el-form-item>
           </el-collapse-item>
 
           <el-collapse-item title="模型设置" name="model">

@@ -54,6 +54,7 @@ interface Session extends BaseEntity {
 
 interface SessionForm {
   title: string // 标题
+  turn: number // 当前对话轮次
   config: SessionConfig
 }
 
