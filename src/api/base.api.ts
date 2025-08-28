@@ -31,6 +31,31 @@ export async function generateSummary(data: SummaryRequest) {
   })
 }
 
+// 更新摘要
+export function updateSummary(
+  tenant_name: string,
+  uuid: string,
+  summary: string,
+  turn: number | undefined,
+) {
+  return fetchData({
+    url: `/rpg-mt/vector_db/summary/${tenant_name}/${uuid}`,
+    method: 'put',
+    data: {
+      summary,
+      turn,
+    },
+  })
+}
+
+// 删除摘要
+export function deleteSummary(tenant_name: string, uuid: string) {
+  return fetchData({
+    url: `/rpg-mt/vector_db/summary/${tenant_name}/${uuid}`,
+    method: 'delete',
+  })
+}
+
 // offset 分页
 export function getSummarysByOffset(tenant_name: string, size: number = 10, page: number = 1) {
   return fetchData<RespModel<SummaryItem>>({

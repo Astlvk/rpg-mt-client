@@ -39,7 +39,12 @@
       <el-button type="primary" @click="handleSearch">搜索</el-button>
     </div>
 
-    <ResList :summaryList="summaryList" style="height: calc(100% - 22px)" />
+    <ResList
+      :tenantName="tenantName"
+      :summaryList="summaryList"
+      style="height: calc(100% - 22px)"
+      @success="getSummaryList"
+    />
   </div>
 </template>
 

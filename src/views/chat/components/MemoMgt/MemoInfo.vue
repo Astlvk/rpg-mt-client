@@ -11,7 +11,11 @@
             <template #header>
               <div class="card-header">
                 <el-text type="info" size="small">更新时间：{{ item.updated_at }}</el-text>
-                <el-button type="primary" link @click="handleView(item.summary)">查看</el-button>
+
+                <div>
+                  <el-text type="info" size="small">turn：{{ item.turn }}</el-text>
+                  <el-button type="primary" link @click="handleView(item.summary)">查看</el-button>
+                </div>
               </div>
             </template>
 

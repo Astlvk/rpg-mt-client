@@ -9,6 +9,7 @@ interface SummaryItem {
   summary: string
   distance?: number
   score?: number
+  turn?: number
   created_at: string
   updated_at: string
 }
