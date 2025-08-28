@@ -25,6 +25,8 @@
             </template>
           </el-card>
         </div>
+
+        <el-empty v-if="queryInfo.summaries.length === 0" description="无搜索结果" />
       </div>
     </template>
 

@@ -13,6 +13,7 @@ async function chatWriter(messages: Message[]) {
     if (curSession.value) {
       // 生成ai回复的占位内容
       const lastAiMsg = setLastAiMsg(buildAiMessage(curSession.value.id, 0, '', true))
+      scrollToBottom()
 
       const msgs = messages.slice(-curSession.value.config.history)
 
