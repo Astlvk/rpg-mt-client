@@ -25,9 +25,9 @@ export function useSession() {
     const count = await getSessionCount()
 
     // 初始化，不存在则创建
-    if (count === 0) {
-      await handleCreateSession()
-    }
+    // if (count === 0) {
+    //   await handleCreateSession()
+    // }
 
     if (count > 0) {
       const session = await getSessionByIndex(count - 1)
