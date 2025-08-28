@@ -20,6 +20,7 @@ interface ChatBaseModel {
 interface SummaryRequest extends ChatBaseModel {
   summary_prompt: string
   tenant_name: string
+  turn?: number
 }
 
 export type { ChatBaseModel, SummaryRequest, RespModel }

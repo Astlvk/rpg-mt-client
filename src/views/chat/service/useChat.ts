@@ -159,6 +159,7 @@ async function summary(messages: Message[]) {
         streaming: true,
         summary_prompt: curSession.value.config.summaryPrompt,
         tenant_name: curSession.value.id,
+        turn: curTurn,
       })
     } catch (error) {
       throw error
