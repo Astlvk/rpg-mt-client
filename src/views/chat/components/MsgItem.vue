@@ -32,15 +32,16 @@
           :icon="Memo"
           @click="handleMemo(msg)"
         />
-        <el-button
+
+        <el-tooltip
           v-if="msg.usageMetadata"
-          :title="msg.usageMetadata"
-          :icon="Histogram"
-          type="primary"
-          link
-          size="small"
-          style="margin-left: 0px"
-        />
+          class="box-item"
+          effect="light"
+          placement="bottom"
+          :content="`input: ${msg.usageMetadata.inputTokens}, output: ${msg.usageMetadata.outputTokens}, total: ${msg.usageMetadata.totalTokens}`"
+        >
+          <el-button :icon="Histogram" type="primary" link size="small" style="margin-left: 0px" />
+        </el-tooltip>
 
         <el-popconfirm
           v-if="!msg.id.includes(aiMsgIdPrefix)"
