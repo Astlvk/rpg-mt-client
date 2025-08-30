@@ -100,8 +100,13 @@ export function useSession() {
         baseUrl: '',
         sysPrompt: '',
         instructionPrompt: '',
+        summarySystemPrompt: '',
         summaryPrompt:
           '请把之前的对话内容进行总结，生成md格式的摘要，仅返回摘要内容，不要包含任何其他内容',
+        summaryMergeSystemPrompt: '',
+        summaryMergePrompt: '',
+        summaryDistance: 0.3,
+        summaryTopK: 5,
         queryExtractPrompt: '',
         queryToolPrompt: '',
         firstAiMsg: '',

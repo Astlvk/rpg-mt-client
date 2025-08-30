@@ -161,9 +161,15 @@ async function summary(messages: Message[]) {
         temperature: curSession.value.config.summaryModel.temperature,
         max_tokens: curSession.value.config.summaryModel.maxTokens,
         streaming: true,
+        summary_system_prompt: curSession.value.config.summarySystemPrompt,
         summary_prompt: curSession.value.config.summaryPrompt,
         tenant_name: curSession.value.id,
         turn: curTurn,
+        update_summary: curSession.value.config.updateSummary,
+        summary_distance: curSession.value.config.summaryDistance,
+        summary_top_k: curSession.value.config.summaryTopK,
+        summary_merge_system_prompt: curSession.value.config.summaryMergeSystemPrompt,
+        summary_merge_prompt: curSession.value.config.summaryMergePrompt,
       })
     } catch (error) {
       throw error

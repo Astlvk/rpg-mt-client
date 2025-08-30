@@ -139,8 +139,14 @@
               <el-switch v-model="form.config.enableSummary" />
             </el-form-item>
 
-            <el-form-item label="更新摘要" prop="config.updateSummary">
-              <el-switch v-model="form.config.updateSummary" :disabled="true" />
+            <el-form-item label="系统提示" prop="config.summarySystemPrompt">
+              <MdEditor
+                v-model="form.config.summarySystemPrompt"
+                :preview="false"
+                :toolbars="toolbars"
+                style="height: 200px"
+                placeholder="用于生成历史摘要的系统提示词"
+              />
             </el-form-item>
 
             <el-form-item label="摘要提示" prop="config.summaryPrompt">
@@ -160,6 +166,45 @@
             <el-form-item label="摘要数量" prop="config.summaryNum">
               <el-input-number v-model="form.config.summaryNum" :min="1" />
             </el-form-item>
+
+            <el-form-item label="更新摘要" prop="config.updateSummary">
+              <el-switch v-model="form.config.updateSummary" />
+            </el-form-item>
+
+            <template v-if="form.config.updateSummary">
+              <el-form-item label="召回距离" prop="config.summaryDistance">
+                <el-input-number
+                  v-model="form.config.summaryDistance"
+                  :min="0"
+                  :max="1"
+                  :step="0.1"
+                />
+              </el-form-item>
+
+              <el-form-item label="召回数量" prop="config.summaryTopK">
+                <el-input-number v-model="form.config.summaryTopK" :min="1" :max="100" />
+              </el-form-item>
+
+              <el-form-item label="系统提示" prop="config.summaryMergeSystemPrompt">
+                <MdEditor
+                  v-model="form.config.summaryMergeSystemPrompt"
+                  :preview="false"
+                  :toolbars="toolbars"
+                  style="height: 200px"
+                  placeholder="用于指示LLM如何更新摘要的系统提示词"
+                />
+              </el-form-item>
+
+              <el-form-item label="更新提示" prop="config.summaryMergePrompt">
+                <MdEditor
+                  v-model="form.config.summaryMergePrompt"
+                  :preview="false"
+                  :toolbars="toolbars"
+                  style="height: 200px"
+                  placeholder="更新摘要时必填，用于指示LLM如何更新摘要的提示词，可用的字符串变量：{summaries}为历史摘要，{new_summary}为新摘要"
+                />
+              </el-form-item>
+            </template>
           </el-collapse-item>
 
           <el-collapse-item title="召回设置" name="retriever">

@@ -13,6 +13,14 @@
               </div>
 
               <div>
+                <el-button
+                  v-if="item.merged_summary"
+                  type="primary"
+                  link
+                  @click="handleViewHistory(item)"
+                >
+                  历史
+                </el-button>
                 <el-button type="primary" link @click="handleView(item)">查看</el-button>
                 <el-popconfirm
                   title="确定删除该消息吗？"
@@ -53,6 +61,13 @@
         <el-button type="primary" :loading="btnLoading" @click="handleUpdate">更新</el-button>
       </template>
     </el-dialog>
+
+    <el-drawer v-model="openHistory" title="合并历史" size="50%">
+      <template v-for="item in curSummaryItem?.merged_summary" :key="item.turn">
+        <el-divider>{{ item.turn }}</el-divider>
+        <MdPreview :modelValue="item.summary" />
+      </template>
+    </el-drawer>
   </div>
 </template>
 
@@ -60,7 +75,7 @@
 import { ref, type PropType } from 'vue'
 import { deleteSummary, updateSummary } from '@/api/base.api'
 import type { SummaryItem } from '@/schema/summary'
-import { MdEditor } from 'md-editor-v3'
+import { MdPreview, MdEditor } from 'md-editor-v3'
 import { ElMessage, ElLoading } from 'element-plus'
 
 const props = defineProps({
@@ -76,14 +91,22 @@ const props = defineProps({
 const emit = defineEmits(['success'])
 
 const open = ref(false)
+const openHistory = ref(false)
 const btnLoading = ref(false)
 const curSummaryItem = ref<SummaryItem | null>(null)
 const curSummary = ref('')
+// const curMergedSummary = ref('')
 
 function handleView(val: SummaryItem) {
   curSummaryItem.value = val
   curSummary.value = val.summary
   open.value = true
+}
+
+function handleViewHistory(val: SummaryItem) {
+  curSummaryItem.value = val
+  // curMergedSummary.value = '```json\n' + JSON.stringify(val.merged_summary, null, 2) + '\n```'
+  openHistory.value = true
 }
 
 async function handleUpdate() {
@@ -126,13 +149,14 @@ async function handleDel(uuid: string) {
 .res-list {
   height: 100%;
   display: flex;
+  align-content: flex-start;
   flex-wrap: wrap;
   overflow-y: auto;
 
   .item {
     padding: 5px;
     box-sizing: border-box;
-    width: 25%;
+    width: 50%;
 
     .card {
       height: 320px;

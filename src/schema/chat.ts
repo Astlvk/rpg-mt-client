@@ -28,7 +28,12 @@ interface SessionConfig {
   distance: number // 距离
   sysPrompt: string // 系统提示词
   instructionPrompt: string // 指令提示词
+  summarySystemPrompt: string // 摘要系统提示词
   summaryPrompt: string // 摘要提示词
+  summaryMergeSystemPrompt: string // 更新摘要的系统提示词
+  summaryMergePrompt: string // 更新摘要的提示词
+  summaryDistance: number // 触发更新摘要的相似距离
+  summaryTopK: number // 获取需要更新摘要的数量
   firstAiMsg: string // 第一轮ai消息（开场白）
   queryExtractPrompt: string // 搜索词提取提示词
   queryToolPrompt: string // 搜索工具提示词
