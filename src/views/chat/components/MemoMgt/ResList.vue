@@ -54,7 +54,7 @@
 
     <el-dialog v-model="open" title="摘要详情" width="50%">
       <div class="summary-con">
-        <MdEditor v-model="curSummary" :codeFoldable="false" :preview="false" />
+        <MdEditor ref="mdEditorRef" v-model="curSummary" :codeFoldable="false" :preview="false" />
       </div>
 
       <template #footer>
@@ -72,7 +72,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type PropType } from 'vue'
+import { ref, type PropType, nextTick } from 'vue'
+import type { ExposeParam } from 'md-editor-v3'
 import { deleteSummary, updateSummary } from '@/api/base.api'
 import type { SummaryItem } from '@/schema/summary'
 import { MdPreview, MdEditor } from 'md-editor-v3'
@@ -92,6 +93,7 @@ const emit = defineEmits(['success'])
 
 const open = ref(false)
 const openHistory = ref(false)
+const mdEditorRef = ref<ExposeParam | null>(null)
 const btnLoading = ref(false)
 const curSummaryItem = ref<SummaryItem | null>(null)
 const curSummary = ref('')
@@ -101,6 +103,9 @@ function handleView(val: SummaryItem) {
   curSummaryItem.value = val
   curSummary.value = val.summary
   open.value = true
+  nextTick(() => {
+    // mdEditorRef.value?.togglePreviewOnly(true)
+  })
 }
 
 function handleViewHistory(val: SummaryItem) {

@@ -23,7 +23,7 @@
         placeholder="相似性距离"
         :min="0"
         :max="1"
-        :step="1"
+        :step="0.1"
         @keyup.enter="handleSearch"
       />
 

@@ -80,7 +80,7 @@ function handleView(val: string) {
     .item {
       padding: 5px;
       box-sizing: border-box;
-      width: 25%;
+      width: 50%;
 
       .card {
         height: 320px;

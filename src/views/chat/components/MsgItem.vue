@@ -24,6 +24,9 @@
 
       <div class="msg-time">
         {{ dayjs(msg.createdAt).format('YYYY-MM-DD HH:mm:ss') }}
+        <el-divider direction="vertical" />
+        {{ msg.turn }}
+        <el-divider direction="vertical" />
         <el-button
           v-if="msg.docs && msg.docs.length > 0"
           type="primary"

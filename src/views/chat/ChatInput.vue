@@ -84,7 +84,7 @@ function handleHistory() {
 }
 
 async function buildMessages() {
-  const message = buildUserMessage(curSession.value!.id, 0, inputPrompt.value)
+  const message = buildUserMessage(curSession.value!.id, curSession.value!.turn + 1, inputPrompt.value)
   await addMessage(message)
   // 直接获取携带的历史消息上限，虽然sse接口内还会再截取，不过数据库查出的数据可以少点
   const messages = await getMessagesByLimit(curSession.value!.id, curSession.value!.config.history)

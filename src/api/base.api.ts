@@ -94,8 +94,8 @@ export function searchSummary(
 ) {
   return fetchData<RespModel<SummaryItem>>({
     url: `/rpg-mt/vector_db/summary/${tenant_name}/search`,
-    method: 'get',
-    params: {
+    method: 'post',
+    data: {
       query,
       mode,
       distance,
