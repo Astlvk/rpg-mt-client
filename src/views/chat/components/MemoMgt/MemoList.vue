@@ -8,6 +8,7 @@
       <el-text type="info" size="small"> 当前页：{{ cursorStack.length + 1 }} </el-text>
 
       <div>
+        <el-button type="primary" link @click="handleAddMemo">新增</el-button>
         <el-button type="primary" link :disabled="cursorStack.length === 0" @click="handlePrevPage">
           上一页
         </el-button>
@@ -49,6 +50,7 @@ onMounted(() => {
   getSummaryList()
 })
 
+const openAddMemo = ref(false)
 const pageSize = ref(10)
 const cursorStack = ref<string[]>([])
 const total = ref(0)
@@ -97,6 +99,10 @@ function handlePrevPage() {
 function handlePageSizeChange() {
   cursorStack.value = []
   getSummaryList()
+}
+
+function handleAddMemo() {
+  openAddMemo.value = true
 }
 </script>
 

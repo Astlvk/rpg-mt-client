@@ -31,6 +31,18 @@ export async function generateSummary(data: SummaryRequest) {
   })
 }
 
+// 新增摘要
+export function addSummary(tenant_name: string, summary: string, turn: number | undefined) {
+  return fetchData({
+    url: `/rpg-mt/vector_db/summary/${tenant_name}`,
+    method: 'post',
+    data: {
+      summary,
+      turn,
+    },
+  })
+}
+
 // 更新摘要
 export function updateSummary(
   tenant_name: string,
