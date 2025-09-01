@@ -1,12 +1,12 @@
 <template>
   <div class="memo-edit">
-    <el-dialog v-model="open" title="摘要详情" width="50%">
+    <el-dialog v-model="open" title="摘要详情" width="50%" @open="handleOpen" @close="handleClose">
       <div class="summary-con">
         <MdEditor ref="mdEditorRef" v-model="curSummary" :codeFoldable="false" :preview="false" />
       </div>
 
       <template #footer>
-        <el-button type="primary" :loading="btnLoading" @click="handleUpdate">更新</el-button>
+        <el-button type="primary" :loading="btnLoading" @click="handleSave">保存</el-button>
       </template>
     </el-dialog>
   </div>
@@ -16,7 +16,9 @@
 import { ref, computed, type PropType } from 'vue'
 import type { ExposeParam } from 'md-editor-v3'
 import type { SummaryItem } from '@/schema/summary'
-import { addSummary } from '@/api/base.api'
+import { getCurSession } from '../../service/workspace'
+import { addSummary, updateSummary } from '@/api/base.api'
+import { ElMessage } from 'element-plus'
 import { MdEditor } from 'md-editor-v3'
 
 const props = defineProps({
@@ -34,7 +36,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'success'])
 const open = computed({
   get() {
     return props.modelValue
@@ -45,19 +47,41 @@ const open = computed({
 })
 
 const btnLoading = ref(false)
-const curSummaryItem = ref<SummaryItem | null>(null)
 const curSummary = ref('')
 const mdEditorRef = ref<ExposeParam | null>(null)
 
-function init() {
-  console.log('init')
+function handleOpen() {
+  init()
 }
 
-function handleAdd() {
+function handleClose() {
   curSummary.value = ''
 }
 
-function handleUpdate() {
+function init() {
+  if (props.data) {
+    curSummary.value = props.data.summary
+  } else {
+    curSummary.value = ''
+  }
+}
+
+async function handleSave() {
   btnLoading.value = true
+  try {
+    if (props.data) {
+      await updateSummary(props.tenantName, props.data.uuid, curSummary.value, props.data.turn)
+    } else {
+      const curSession = getCurSession()
+      await addSummary(props.tenantName, curSummary.value, curSession.value!.turn)
+    }
+    ElMessage.success('保存成功')
+    open.value = false
+    emit('success')
+  } catch (error) {
+    console.error(error)
+    ElMessage.error('保存失败')
+  }
+  btnLoading.value = false
 }
 </script>

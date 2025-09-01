@@ -29,6 +29,8 @@
       style="height: calc(100% - 22px)"
       @success="getSummaryList"
     />
+
+    <MemoEdit v-model="openEditMemo" :tenantName="tenantName" @success="getSummaryList" />
   </div>
 </template>
 
@@ -38,10 +40,15 @@ import { getSummarysByCursor } from '@/api/base.api'
 import type { SummaryItem } from '@/schema/summary'
 import { ElMessage, ElLoading } from 'element-plus'
 import ResList from './ResList.vue'
+import MemoEdit from './MemoEdit.vue'
 
 const props = defineProps({
   tenantName: {
     type: String,
+    default: null,
+  },
+  turn: {
+    type: Number,
     default: null,
   },
 })
@@ -50,7 +57,7 @@ onMounted(() => {
   getSummaryList()
 })
 
-const openAddMemo = ref(false)
+const openEditMemo = ref(false)
 const pageSize = ref(10)
 const cursorStack = ref<string[]>([])
 const total = ref(0)
@@ -102,7 +109,7 @@ function handlePageSizeChange() {
 }
 
 function handleAddMemo() {
-  openAddMemo.value = true
+  openEditMemo.value = true
 }
 </script>
 
