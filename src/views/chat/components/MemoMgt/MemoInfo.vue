@@ -112,4 +112,14 @@ function handleView(val: string) {
     overflow-y: auto;
   }
 }
+
+@media (max-width: 600px) {
+  .memo-info {
+    .query-info {
+      .item {
+        width: 100%;
+      }
+    }
+  }
+}
 </style>

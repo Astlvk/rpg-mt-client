@@ -2,7 +2,7 @@
   <el-drawer
     v-model="open"
     title="对话记录"
-    size="50%"
+    size="100%"
     direction="rtl"
     append-to-body
     destroy-on-close
@@ -14,14 +14,13 @@
       <div class="action-bar">
         <el-text type="info" size="small"> 总数：{{ total }} </el-text>
         <el-text type="info" size="small"> 总页数：{{ totalPage }} </el-text>
-        <!-- <el-text type="info" size="small"> 当前页：{{ cursorStack.length + 1 }} </el-text> -->
 
         <div>
           <el-button type="primary" link @click="handlePrevPage"> 上一页 </el-button>
           <el-button type="primary" link @click="handleNextPage">下一页</el-button>
         </div>
 
-        <el-select v-model="pageSize" size="small" style="width: 90px" @change="init">
+        <el-select v-model="pageSize" size="small" style="width: 60px" @change="init">
           <el-option label="10" :value="10" />
           <el-option label="20" :value="20" />
           <el-option label="30" :value="30" />
@@ -171,7 +170,7 @@ function handleClose() {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 20px;
+    gap: 5px;
   }
 }
 </style>

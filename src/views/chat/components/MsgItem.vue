@@ -166,4 +166,13 @@ const deleteMessageById = (id: string) => {
     }
   }
 }
+
+@media (max-width: 600px) {
+  .msg-item .msg-content {
+    max-width: 100%;
+  }
+  .msg-item .msg-avatar {
+    display: none;
+  }
+}
 </style>

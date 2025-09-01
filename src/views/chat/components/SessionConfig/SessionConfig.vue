@@ -3,7 +3,7 @@
     <el-drawer
       v-model="open"
       title="会话设置"
-      size="50%"
+      size="100%"
       direction="rtl"
       append-to-body
       destroy-on-close

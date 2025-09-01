@@ -59,7 +59,7 @@
       @success="emit('success')"
     />
 
-    <el-drawer v-model="openHistory" title="合并历史" size="50%">
+    <el-drawer v-model="openHistory" title="合并历史" size="100%">
       <template v-for="item in curSummaryItem?.merged_summary" :key="item.turn">
         <el-divider>{{ item.turn }}</el-divider>
         <MdPreview :modelValue="item.summary" />
@@ -156,6 +156,14 @@ async function handleDel(uuid: string) {
   .summary-con {
     height: 500px;
     overflow-y: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .res-list {
+    .item {
+      width: 100%;
+    }
   }
 }
 </style>

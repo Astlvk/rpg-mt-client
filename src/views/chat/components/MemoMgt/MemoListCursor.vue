@@ -1,17 +1,26 @@
 <template>
   <div class="memo-list">
     <div class="action-bar">
-      <el-button type="primary" link @click="handleAddMemo">新增</el-button>
-      <el-pagination
-        v-model:current-page="page"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 30, 40]"
-        size="small"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @update:page-size="handlePageSizeChange"
-        @update:current-page="getSummaryList"
-      />
+      <el-text type="info" size="small"> 仅浏览用，非顺序排序（UUID升序）； </el-text>
+      <!-- 总页数 -->
+      <el-text type="info" size="small"> 总数：{{ total }} </el-text>
+      <el-text type="info" size="small"> 总页数：{{ totalPage }} </el-text>
+      <el-text type="info" size="small"> 当前页：{{ cursorStack.length + 1 }} </el-text>
+
+      <div>
+        <el-button type="primary" link @click="handleAddMemo">新增</el-button>
+        <el-button type="primary" link :disabled="cursorStack.length === 0" @click="handlePrevPage">
+          上一页
+        </el-button>
+        <el-button type="primary" link @click="handleNextPage">下一页</el-button>
+      </div>
+
+      <el-select v-model="pageSize" size="small" style="width: 90px" @change="handlePageSizeChange">
+        <el-option label="10" :value="10" />
+        <el-option label="20" :value="20" />
+        <el-option label="30" :value="30" />
+        <el-option label="40" :value="40" />
+      </el-select>
     </div>
 
     <ResList
@@ -26,8 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { getSummarysByOffset } from '@/api/base.api'
+import { ref, computed, onMounted } from 'vue'
+import { getSummarysByCursor } from '@/api/base.api'
 import type { SummaryItem } from '@/schema/summary'
 import { ElMessage, ElLoading } from 'element-plus'
 import ResList from './ResList.vue'
@@ -49,9 +58,12 @@ onMounted(() => {
 })
 
 const openEditMemo = ref(false)
-const total = ref(0)
 const pageSize = ref(10)
-const page = ref(1)
+const cursorStack = ref<string[]>([])
+const total = ref(0)
+const totalPage = computed(() => {
+  return Math.ceil(total.value / pageSize.value)
+})
 const summaryList = ref<SummaryItem[]>([])
 
 async function getSummaryList() {
@@ -60,13 +72,18 @@ async function getSummaryList() {
   })
   if (props.tenantName) {
     try {
-      const { total: t, data } = await getSummarysByOffset(
+      const { total: t, data } = await getSummarysByCursor(
         props.tenantName,
+        cursorStack.value[cursorStack.value.length - 1],
         pageSize.value,
-        page.value,
       )
       total.value = t
-      summaryList.value = data
+      if (data.length) {
+        summaryList.value = data
+      } else {
+        cursorStack.value.pop()
+        ElMessage.warning('没有更多数据了')
+      }
     } catch (error) {
       console.error(error)
       ElMessage.error('加载失败，详情请查看控制台输出')
@@ -75,8 +92,19 @@ async function getSummaryList() {
   loading.close()
 }
 
+function handleNextPage() {
+  const cursor = summaryList.value[summaryList.value.length - 1].uuid
+  cursorStack.value.push(cursor)
+  getSummaryList()
+}
+
+function handlePrevPage() {
+  cursorStack.value.pop()
+  getSummaryList()
+}
+
 function handlePageSizeChange() {
-  page.value = 1
+  cursorStack.value = []
   getSummaryList()
 }
 
@@ -96,7 +124,7 @@ function handleAddMemo() {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 20px;
   }
 
   .list-con {

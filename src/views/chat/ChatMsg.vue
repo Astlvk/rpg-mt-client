@@ -104,4 +104,10 @@ function handleMemo(msg: Message) {
 .chat-msg::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+@media (max-width: 600px) {
+  .chat-msg {
+    padding: 0px;
+  }
+}
 </style>
