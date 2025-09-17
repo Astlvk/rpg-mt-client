@@ -18,6 +18,12 @@ enum DeepSeekModel {
   DEEPSEEK_REASONER = 'deepseek-reasoner',
 }
 
+enum GeminiModel {
+  GEMINI_25_FLASH = 'gemini-2.5-flash',
+  GEMINI_25_FLASH_LITE = 'gemini-2.5-flash-lite',
+  GEMINI_25_PRO = 'gemini-2.5-pro',
+}
+
 enum Role {
   SYSTEM = 'system',
   AI = 'assistant',
@@ -44,4 +50,13 @@ enum SearchMode {
   AGENT = 'agent',
 }
 
-export { Model, ZhipuAIModel, DeepSeekModel, Role, RetrieverMode, RetrieverCategory, SearchMode }
+export {
+  Model,
+  ZhipuAIModel,
+  DeepSeekModel,
+  GeminiModel,
+  Role,
+  RetrieverMode,
+  RetrieverCategory,
+  SearchMode,
+}

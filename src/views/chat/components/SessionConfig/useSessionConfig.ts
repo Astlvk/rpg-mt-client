@@ -2,6 +2,7 @@ import type { ModelConfigType, SessionForm } from '@/schema/chat'
 import { ref, reactive, toRaw } from 'vue'
 import {
   ZhipuAIModel,
+  GeminiModel,
   DeepSeekModel,
   RetrieverMode,
   RetrieverCategory,
@@ -26,6 +27,14 @@ export function useSessionConfig() {
     {
       label: 'qwen',
       options: [{ label: 'q4_k_m.gguf', value: 'q4_k_m.gguf' }],
+    },
+    {
+      label: 'gemini',
+      options: [
+        { label: 'Gemini-2.5-Flash', value: GeminiModel.GEMINI_25_FLASH },
+        { label: 'Gemini-2.5-Flash-Lite', value: GeminiModel.GEMINI_25_FLASH_LITE },
+        { label: 'Gemini-2.5-Pro', value: GeminiModel.GEMINI_25_PRO },
+      ],
     },
     {
       label: 'deepseek',
