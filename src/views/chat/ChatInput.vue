@@ -3,6 +3,7 @@
     <div class="setting">
       <!-- <label class="">深度思考</label> -->
       <!-- <el-switch class="mr-[8px]" :active-value="false" :inactive-value="true" size="small" /> -->
+      <el-button type="primary" link :icon="User" @click="openCharacterSummary = true" />
       <el-button type="primary" link :icon="MessageBox" @click="handleHistory">更多</el-button>
     </div>
 
@@ -38,6 +39,7 @@
     </div>
 
     <MessageRecord v-model="open" :session-id="curSession?.id" />
+    <CharacterSummary v-model="openCharacterSummary" />
   </div>
 </template>
 
@@ -48,12 +50,14 @@ import { ElMessage } from 'element-plus'
 import { addMessage, getMessagesByLimit, buildUserMessage } from '@/db/useMessagesRepo'
 import { getCurSession, enableAutoScroll } from './service/workspace'
 import { chatWriter } from './service/useChat'
-import { MessageBox } from '@element-plus/icons-vue'
+import { MessageBox, User } from '@element-plus/icons-vue'
 import MessageRecord from './components/MessageRecord.vue'
+import CharacterSummary from './components/CharacterSummary.vue'
 
 const curSession = getCurSession()
 const inputPrompt = ref('')
 const open = ref(false)
+const openCharacterSummary = ref(false)
 
 // function handleKeydown(e: KeyboardEvent) {
 //   if (e.key === 'Enter') {
@@ -84,7 +88,11 @@ function handleHistory() {
 }
 
 async function buildMessages() {
-  const message = buildUserMessage(curSession.value!.id, curSession.value!.turn + 1, inputPrompt.value)
+  const message = buildUserMessage(
+    curSession.value!.id,
+    curSession.value!.turn + 1,
+    inputPrompt.value,
+  )
   await addMessage(message)
   // 直接获取携带的历史消息上限，虽然sse接口内还会再截取，不过数据库查出的数据可以少点
   const messages = await getMessagesByLimit(curSession.value!.id, curSession.value!.config.history)
