@@ -16,6 +16,7 @@
           <MdEditor
             v-model="form.sysPrompt"
             :preview="false"
+            :toolbars="TOOL_BARS"
             style="height: 200px"
             placeholder="系统提示词"
           />
@@ -25,18 +26,26 @@
           <MdEditor
             v-model="form.text"
             :preview="false"
+            :toolbars="TOOL_BARS"
             style="height: 200px"
             placeholder="文本内容"
           />
         </el-collapse-item>
       </el-collapse>
     </div>
+
+    <template #footer>
+      <el-button @click="open = false">取消</el-button>
+      <el-button type="primary" @click="handleGen">生成</el-button>
+      <el-button type="primary" @click="handleIns">插入</el-button>
+    </template>
   </el-drawer>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { MdEditor, type ToolbarNames } from 'md-editor-v3'
+import { TOOL_BARS } from '../service/constCommon'
+import { MdEditor } from 'md-editor-v3'
 
 const props = defineProps({
   modelValue: {
@@ -63,6 +72,7 @@ const activeNames = ref(['sys', 'text'])
 const form = ref({
   sysPrompt: '',
   text: '',
+  type: '角色',
 })
 
 function handleOpen() {
@@ -71,5 +81,13 @@ function handleOpen() {
 
 function handleClose() {
   console.log('handleClose')
+}
+
+function handleGen() {
+  console.log('handleGen')
+}
+
+function handleIns() {
+  console.log('handleIns')
 }
 </script>

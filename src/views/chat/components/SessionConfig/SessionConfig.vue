@@ -287,8 +287,9 @@
 import { computed } from 'vue'
 import { RetrieverCategory, SearchMode } from '@/schema/enum'
 import { useSessionConfig } from './useSessionConfig'
+import { TOOL_BARS } from '../../service/constCommon'
 import { QuestionFilled } from '@element-plus/icons-vue'
-import { MdEditor, type ToolbarNames } from 'md-editor-v3'
+import { MdEditor } from 'md-editor-v3'
 
 const props = defineProps({
   modelValue: {
@@ -321,41 +322,7 @@ const {
   init,
   generateFirstAiMsg,
 } = useSessionConfig()
-const toolbars: ToolbarNames[] = [
-  'pageFullscreen',
-  'fullscreen',
-  '-',
-  'bold',
-  'underline',
-  'italic',
-  '-',
-  'title',
-  'strikeThrough',
-  'sub',
-  'sup',
-  'quote',
-  'unorderedList',
-  'orderedList',
-  'task',
-  '-',
-  'codeRow',
-  'code',
-  'link',
-  'image',
-  'table',
-  'mermaid',
-  'katex',
-  '-',
-  'revoke',
-  'next',
-  'save',
-  '=',
-  'preview',
-  'previewOnly',
-  'htmlPreview',
-  'catalog',
-  'github',
-]
+const toolbars = TOOL_BARS
 
 function handleOpen() {
   init()
