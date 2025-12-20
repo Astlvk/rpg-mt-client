@@ -180,7 +180,7 @@ export function useSessionConfig() {
   }
 
   async function buildFirstAiMsg() {
-    // TODO: 构建开场白数据
+    // 构建开场白数据
     const firstAiMsgId = 'firstAiMsg-' + curSession.value!.id
     await updateMessage(firstAiMsgId, {
       content: form.config.firstAiMsg,

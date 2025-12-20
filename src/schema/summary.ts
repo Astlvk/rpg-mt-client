@@ -1,3 +1,5 @@
+import { SummaryType } from '@/schema/enum'
+
 // 创作接口返回的检索结果
 interface queryInfo {
   query: string
@@ -12,6 +14,7 @@ interface MergedSummary {
 interface SummaryItem {
   uuid: string
   summary: string
+  summaryType?: SummaryType
   distance?: number
   score?: number
   turn?: number

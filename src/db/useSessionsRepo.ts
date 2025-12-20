@@ -3,7 +3,7 @@ import { liveQuery } from 'dexie'
 import { db } from './index'
 import { useObservable } from '@vueuse/rxjs'
 import { from } from 'rxjs'
-import type { Session, SessionPatch } from '@/schema/chat'
+import type { Session, SessionPatch, SessionDotPatch } from '@/schema/chat'
 
 // 按照createdAt时间升序排序
 const sessions = useObservable(from(liveQuery(() => db.sessions.orderBy('lastMsgTime').toArray())))
@@ -18,6 +18,14 @@ function putSession(session: Session) {
 
 function updateSession(id: string, patch: SessionPatch) {
   return db.sessions.update(id, toRaw(patch))
+}
+
+// 用于类似一下这种点路径更新，规避类型错误
+// db.friends.update(friendId, {
+//   "address.zipcode": 12345
+// });
+function updateSessionDot(id: string, patch: SessionDotPatch) {
+  return db.sessions.update(id, toRaw(patch) as any)
 }
 
 function deleteSession(id: string) {
@@ -59,6 +67,7 @@ export {
   addSession,
   putSession,
   updateSession,
+  updateSessionDot,
   deleteSession,
   getSession,
   getSessions,

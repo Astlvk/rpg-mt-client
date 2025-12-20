@@ -183,4 +183,45 @@ async function summary(messages: Message[]) {
   }
 }
 
-export { chatWriter }
+// 主动摘要
+async function activeSummary(messages: Message[]) {
+  const curSession = getCurSession()
+  if (curSession.value) {
+    setSummaryLoading(true)
+    try {
+      // 截取需要摘要的最后几条消息
+      const msgs = messages.slice(-curSession.value.config.summaryNum)
+      if (msgs.length === 0) {
+        return
+      }
+
+      console.log('主动摘要中....')
+
+      await generateSummary({
+        model: curSession.value.config.summaryModel.model,
+        api_key: curSession.value.config.apiKey,
+        base_url: curSession.value.config.baseUrl,
+        sys_prompt: curSession.value.config.sysPrompt,
+        messages: msgs,
+        temperature: curSession.value.config.summaryModel.temperature,
+        max_tokens: curSession.value.config.summaryModel.maxTokens,
+        streaming: true,
+        summary_system_prompt: curSession.value.config.summarySystemPrompt,
+        summary_prompt: curSession.value.config.summaryPrompt,
+        tenant_name: curSession.value.id,
+        turn: curSession.value.turn,
+        update_summary: curSession.value.config.updateSummary,
+        summary_distance: curSession.value.config.summaryDistance,
+        summary_top_k: curSession.value.config.summaryTopK,
+        summary_merge_system_prompt: curSession.value.config.summaryMergeSystemPrompt,
+        summary_merge_prompt: curSession.value.config.summaryMergePrompt,
+      })
+    } catch (error) {
+      throw error
+    } finally {
+      setSummaryLoading(false)
+    }
+  }
+}
+
+export { chatWriter, activeSummary }

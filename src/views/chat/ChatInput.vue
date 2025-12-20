@@ -4,6 +4,7 @@
       <!-- <label class="">深度思考</label> -->
       <!-- <el-switch class="mr-[8px]" :active-value="false" :inactive-value="true" size="small" /> -->
       <el-button type="primary" link :icon="User" @click="openCharacterSummary = true" />
+      <el-button type="primary" link :icon="EditPen" @click="handleSummary" />
       <el-button type="primary" link :icon="MessageBox" @click="handleHistory">更多</el-button>
     </div>
 
@@ -46,11 +47,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Position } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { addMessage, getMessagesByLimit, buildUserMessage } from '@/db/useMessagesRepo'
 import { getCurSession, enableAutoScroll } from './service/workspace'
-import { chatWriter } from './service/useChat'
-import { MessageBox, User } from '@element-plus/icons-vue'
+import { chatWriter, activeSummary } from './service/useChat'
+import { MessageBox, User, EditPen } from '@element-plus/icons-vue'
 import MessageRecord from './components/MessageRecord.vue'
 import CharacterSummary from './components/CharacterSummary.vue'
 
@@ -97,6 +98,25 @@ async function buildMessages() {
   // 直接获取携带的历史消息上限，虽然sse接口内还会再截取，不过数据库查出的数据可以少点
   const messages = await getMessagesByLimit(curSession.value!.id, curSession.value!.config.history)
   return messages.reverse()
+}
+
+// 主动摘要
+async function handleSummary() {
+  await ElMessageBox.confirm('确定要执行主动摘要吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(async () => {
+      const messages = await getMessagesByLimit(
+        curSession.value!.id,
+        curSession.value!.config.history,
+      )
+      await activeSummary(messages.reverse())
+    })
+    .catch(() => {
+      console.log('取消')
+    })
 }
 </script>
 

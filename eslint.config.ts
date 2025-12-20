@@ -19,4 +19,11 @@ export default defineConfigWithVueTs(
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
   skipFormatting,
+  {
+    name: 'app/custom-rules',
+    rules: {
+      // 允许显式 any（推荐先用 warn，想彻底放开就 off）
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 )

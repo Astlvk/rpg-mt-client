@@ -1,6 +1,7 @@
 import { fetchData } from './request'
 import type { SummaryRequest, RespModel, ChatBaseModel } from '@/schema/base.api'
 import type { SummaryItem } from '@/schema/summary'
+import type { SummaryType } from '@/schema/enum'
 
 // 新增租户
 export function addTenant(tenant_name: string) {
@@ -32,13 +33,19 @@ export async function generateSummary(data: SummaryRequest) {
 }
 
 // 新增摘要
-export function addSummary(tenant_name: string, summary: string, turn: number | undefined) {
+export function addSummary(
+  tenant_name: string,
+  summary: string,
+  turn: number | undefined,
+  summary_type?: SummaryType | null,
+) {
   return fetchData({
     url: `/rpg-mt/vector_db/summary/${tenant_name}`,
     method: 'post',
     data: {
       summary,
       turn,
+      summary_type,
     },
   })
 }
@@ -49,6 +56,7 @@ export function updateSummary(
   uuid: string,
   summary: string,
   turn: number | undefined,
+  summary_type?: SummaryType | null,
 ) {
   return fetchData({
     url: `/rpg-mt/vector_db/summary/${tenant_name}/${uuid}`,
@@ -56,6 +64,7 @@ export function updateSummary(
     data: {
       summary,
       turn,
+      summary_type,
     },
   })
 }
@@ -117,10 +126,11 @@ export function searchSummary(
 }
 
 // 基础chat接口
-export function chat(data: ChatBaseModel) {
-  return fetchData<{ message: string; content: string }>({
+export function chatBase(data: ChatBaseModel) {
+  return fetchData<{ message: string; data: string }>({
     url: '/rpg-mt/chat/base',
     method: 'post',
     data,
+    timeout: 1000 * 60 * 5,
   })
 }

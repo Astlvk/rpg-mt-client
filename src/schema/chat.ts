@@ -45,6 +45,8 @@ interface SessionConfig {
   searchMode: SearchMode // 检索方式，强制检索，agent检索
   summaryTurn: number // 摘要轮数，1为每轮都启用，2为每两轮启用一次，以此类推
   summaryNum: number // 摘要数量
+  characterSummarySystemPrompt?: string // 角色摘要系统提示词
+  characterSummaryPrompt?: string // 角色摘要提示词
 }
 
 interface Session extends BaseEntity {
@@ -84,4 +86,14 @@ type MessagePatch = Partial<Omit<Message, 'id'>> & { updatedAt: number }
 
 type SessionPatch = Partial<Omit<Session, 'id'>> & { updatedAt: number }
 
-export type { Message, Session, SessionForm, MessagePatch, SessionPatch, ModelConfigType }
+type SessionDotPatch = Record<string, unknown> & { updatedAt: number }
+
+export type {
+  Message,
+  Session,
+  SessionForm,
+  MessagePatch,
+  SessionPatch,
+  SessionDotPatch,
+  ModelConfigType,
+}

@@ -50,6 +50,13 @@ enum SearchMode {
   AGENT = 'agent',
 }
 
+// 摘要类型
+enum SummaryType {
+  CHARACTER = 'character',
+  SUMMARY = 'summary',
+  OTHER = 'other',
+}
+
 export {
   Model,
   ZhipuAIModel,
@@ -59,4 +66,5 @@ export {
   RetrieverMode,
   RetrieverCategory,
   SearchMode,
+  SummaryType,
 }
