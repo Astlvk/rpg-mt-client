@@ -18,7 +18,7 @@ interface ChatBaseModel {
 }
 
 interface SummaryRequest extends ChatBaseModel {
-  summary_system_prompt: string
+  // summary_system_prompt: string
   summary_prompt: string
   tenant_name: string
   turn?: number

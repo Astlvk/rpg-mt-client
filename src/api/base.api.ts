@@ -1,7 +1,7 @@
 import { fetchData } from './request'
 import type { SummaryRequest, RespModel, ChatBaseModel } from '@/schema/base.api'
 import type { SummaryItem } from '@/schema/summary'
-import type { SummaryType } from '@/schema/enum'
+import { SummaryType } from '@/schema/enum'
 
 // 新增租户
 export function addTenant(tenant_name: string) {
