@@ -49,7 +49,7 @@ import { ref } from 'vue'
 import { Position } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addMessage, getMessagesByLimit, buildUserMessage } from '@/db/useMessagesRepo'
-import { getCurSession, enableAutoScroll } from './service/workspace'
+import { getCurSession, enableAutoScroll, forceScrollToBottom } from './service/workspace'
 import { chatWriter, activeSummary } from './service/useChat'
 import { MessageBox, User, EditPen } from '@element-plus/icons-vue'
 import MessageRecord from './components/MessageRecord.vue'
@@ -76,8 +76,9 @@ async function sendMsg() {
   if (inputPrompt.value.trim() === '') {
     ElMessage.warning('请输入内容')
   } else {
-    const messages = await buildMessages()
     enableAutoScroll()
+    const messages = await buildMessages()
+    forceScrollToBottom()
     console.log(messages)
     chatWriter(messages)
     inputPrompt.value = ''

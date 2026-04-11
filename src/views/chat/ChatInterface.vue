@@ -155,9 +155,11 @@ function handleImport() {
 /* 右侧聊天主界面 */
 .chat-main {
   height: 100%;
+  min-height: 0;
   width: calc(100% - 250px);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background-color: #fff;
   transition: none;
 }

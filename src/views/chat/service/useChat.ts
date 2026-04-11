@@ -1,8 +1,14 @@
-import { markRaw, nextTick, type Ref } from 'vue'
+import { markRaw, type Ref } from 'vue'
 import { type Message } from '@/schema/chat'
 import { generateSummary } from '@/api/base.api'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
-import { getCurSession, setLastAiMsg, setSummaryLoading, scrollToBottom } from './workspace'
+import {
+  getCurSession,
+  setLastAiMsg,
+  setSummaryLoading,
+  scrollToBottom,
+  forceScrollToBottom,
+} from './workspace'
 import { buildAiMessage, addMessage } from '@/db/useMessagesRepo'
 import { updateSession } from '@/db/useSessionsRepo'
 import { ElMessage } from 'element-plus'
@@ -13,7 +19,7 @@ async function chatWriter(messages: Message[]) {
     if (curSession.value) {
       // 生成ai回复的占位内容
       const lastAiMsg = setLastAiMsg(buildAiMessage(curSession.value.id, 0, '', true))
-      scrollToBottom()
+      forceScrollToBottom()
 
       const msgs = messages.slice(-curSession.value.config.history)
 
@@ -107,15 +113,7 @@ async function addLastAiMsgToDb(lastAiMsg: Ref<Message | null>) {
       // 这里构建新的对象，避免响应式对无法存入数据库
       const newMsg = { ...lastAiMsg.value }
       await addMessage(newMsg)
-      // emmm，这里为了不闪回，先setTimeout，再nextTick
-      // 虽然不严谨，但可以达到效果，成本很低
-      // 懒得再去重写列表渲染结构，维护内存列表了
-      // 成本太高
-      setTimeout(() => {
-        nextTick(() => {
-          setLastAiMsg(null)
-        })
-      }, 0)
+      setLastAiMsg(null)
     }
 
     // 更新session的最后消息时间

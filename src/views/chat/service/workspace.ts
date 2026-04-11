@@ -1,14 +1,12 @@
-import { ref, nextTick } from 'vue'
-import { useThrottleFn } from '@vueuse/core'
+import { ref } from 'vue'
 import { getSession } from '@/db/useSessionsRepo'
 import type { Session, Message } from '@/schema/chat'
 
 const curSession = ref<Session | null>(null)
 const lastAiMsg = ref<Message | null>(null)
-const msgContainer = ref<HTMLElement | null>(null)
 const isAutoScrollEnabled = ref(true)
 const summaryLoading = ref(false)
-const throttledScrollToBottom = useThrottleFn(scrollToBottom, 300)
+let scrollToBottomHandler: ((force?: boolean) => void) | null = null
 
 function setCurSession(session: Session | null) {
   curSession.value = session
@@ -42,6 +40,10 @@ function setAutoScrollEnabled(enabled: boolean) {
   isAutoScrollEnabled.value = enabled
 }
 
+function getAutoScrollEnabled() {
+  return isAutoScrollEnabled
+}
+
 function getSummaryLoading() {
   return summaryLoading
 }
@@ -50,15 +52,21 @@ function setSummaryLoading(loading: boolean) {
   summaryLoading.value = loading
 }
 
-function scrollToBottom() {
-  if (isAutoScrollEnabled.value) {
-    nextTick(() => {
-      requestAnimationFrame(() => {
-        if (msgContainer.value) {
-          msgContainer.value.scrollTop = msgContainer.value.scrollHeight
-        }
-      })
-    })
+function scrollToBottom(force: boolean = false) {
+  scrollToBottomHandler?.(force)
+}
+
+function forceScrollToBottom() {
+  scrollToBottom(true)
+}
+
+function registerScrollToBottomHandler(handler: (force?: boolean) => void) {
+  scrollToBottomHandler = handler
+}
+
+function unregisterScrollToBottomHandler(handler: (force?: boolean) => void) {
+  if (scrollToBottomHandler === handler) {
+    scrollToBottomHandler = null
   }
 }
 
@@ -71,11 +79,13 @@ function disableAutoScroll() {
 }
 
 export {
-  msgContainer,
   getSummaryLoading,
+  getAutoScrollEnabled,
   setSummaryLoading,
   scrollToBottom,
-  throttledScrollToBottom,
+  forceScrollToBottom,
+  registerScrollToBottomHandler,
+  unregisterScrollToBottomHandler,
   enableAutoScroll,
   disableAutoScroll,
   setCurSession,

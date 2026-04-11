@@ -1,13 +1,14 @@
 <template>
-  <div class="chat-msg" ref="msgContainer" @scroll="handleScroll">
-    <MsgItem
-      v-for="msg in messages"
-      :key="msg.id"
-      :msg="msg"
-      @memo="handleMemo"
-      @delete="deleteMessageById"
-    />
-    <MsgItem v-if="lastAiMsg" :msg="lastAiMsg" />
+  <div class="chat-msg" ref="containerRef" @scroll="onUserScroll">
+    <div ref="messagesContentRef" class="chat-msg-content">
+      <MsgItem
+        v-for="msg in displayMessages"
+        :key="msg.id"
+        :msg="msg"
+        @memo="handleMemo"
+        @delete="deleteMessageById"
+      />
+    </div>
 
     <el-dialog v-model="openMemo" title="检索内容" destroy-on-close fullscreen>
       <MemoInfo :docs="curDocs" />
@@ -18,76 +19,116 @@
 <script setup lang="ts">
 import type { Message } from '@/schema/chat'
 import type { queryInfo } from '@/schema/summary'
-import { computed, watch, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { getMessagesBySessionIdObservable, deleteMessageById } from '@/db/useMessagesRepo'
 import {
-  msgContainer,
-  scrollToBottom,
   getCurSession,
   getLastAiMsg,
   enableAutoScroll,
-  disableAutoScroll,
+  registerScrollToBottomHandler,
+  unregisterScrollToBottomHandler,
 } from './service/workspace'
+import { useChatScroll } from './service/useChatScroll'
 import MemoInfo from './components/MemoMgt/MemoInfo.vue'
 import MsgItem from './components/MsgItem.vue'
 
 const curSession = getCurSession()
 const lastAiMsg = getLastAiMsg()
-// 函数返回的是一个ref对象，所以使用的时候需要主动.value，包装为computed只是为了响应式切换
+const containerRef = ref<HTMLElement | null>(null)
+const messagesContentRef = ref<HTMLElement | null>(null)
+const openMemo = ref(false)
+const curDocs = ref<queryInfo[]>([])
+
+const {
+  scheduleScrollToBottom,
+  onUserScroll,
+  attachResizeObserver,
+  dispose: disposeChatScroll,
+} = useChatScroll(containerRef, { thresholdPx: 24 })
+
 const messagesWrap = computed(() =>
   getMessagesBySessionIdObservable(
     curSession.value?.id,
     curSession.value?.config.windowMsgNum || 50,
   ),
 )
-// 主动解包一层
-const messages = computed(() => {
-  const res = [...(messagesWrap.value.value || [])].reverse()
-  return res
+
+const messages = computed(() => [...(messagesWrap.value.value || [])].reverse())
+
+const displayMessages = computed(() => {
+  const pendingAiMsg = lastAiMsg.value
+
+  if (!pendingAiMsg) {
+    return messages.value
+  }
+
+  if (messages.value.some((msg) => msg.id === pendingAiMsg.id)) {
+    return messages.value
+  }
+
+  return [...messages.value, pendingAiMsg]
 })
-const openMemo = ref(false)
-const curDocs = ref<queryInfo[]>([])
+
+function handleMemo(msg: Message) {
+  openMemo.value = true
+  curDocs.value = msg.docs || []
+}
 
 watch(
-  messages,
+  displayMessages,
   () => {
-    scrollToBottom()
+    scheduleScrollToBottom()
   },
   {
     flush: 'post',
   },
 )
 
-function handleScroll(e: Event) {
-  const container = e.target as HTMLElement
-
-  // 判断是否滚动到底部
-  const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 20
-
-  if (isAtBottom) {
-    // 滚动到底部，启用自动滚动
+watch(
+  () => curSession.value?.id,
+  () => {
     enableAutoScroll()
-  } else {
-    // 禁用自动滚动
-    disableAutoScroll()
-  }
-}
+    scheduleScrollToBottom(true)
+  },
+  {
+    flush: 'post',
+  },
+)
 
-function handleMemo(msg: Message) {
-  openMemo.value = true
-  curDocs.value = msg.docs || []
-}
+watch(
+  messagesContentRef,
+  (el) => {
+    if (el) {
+      attachResizeObserver(el)
+    }
+  },
+  { flush: 'post', immediate: true },
+)
+
+onMounted(() => {
+  registerScrollToBottomHandler(scheduleScrollToBottom)
+  scheduleScrollToBottom(true)
+})
+
+onBeforeUnmount(() => {
+  unregisterScrollToBottomHandler(scheduleScrollToBottom)
+  disposeChatScroll()
+})
 </script>
 
 <style lang="postcss" scoped>
 .chat-msg {
   flex: 1;
+  min-height: 0;
   padding: 20px;
   overflow-y: auto;
   background-color: #fafafa;
 }
 
-/* 滚动条样式 */
+.chat-msg-content {
+  min-height: 1px;
+}
+
 .chat-msg::-webkit-scrollbar {
   width: 6px;
 }
