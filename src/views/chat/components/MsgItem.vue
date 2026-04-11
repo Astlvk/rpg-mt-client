@@ -12,7 +12,13 @@
 
     <div class="msg-content">
       <div class="msg-text">
-        <MdPreview :modelValue="msg.content" :codeFoldable="false" />
+        <MarkdownRender
+          class="msg-markdown"
+          :content="msg.content || ''"
+          :final="!msg.loading"
+          :typewriter="false"
+          :custom-id="`chat-msg-${msg.role}`"
+        />
 
         <div v-if="msg.loading" class="msg-loading">
           <el-icon class="is-loading" size="16">
@@ -69,7 +75,7 @@ import { type PropType } from 'vue'
 import type { Message } from '@/schema/chat'
 import { Role } from '@/schema/enum'
 import dayjs from 'dayjs'
-import { MdPreview } from 'md-editor-v3'
+import MarkdownRender from 'markstream-vue'
 import { User, Service, Loading, Delete, Memo, Histogram } from '@element-plus/icons-vue'
 
 defineProps({
@@ -107,10 +113,7 @@ const deleteMessageById = (id: string) => {
     .msg-text {
       background-color: #409eff;
       border-radius: 18px 18px 4px 18px;
-
-      :deep(.md-editor) {
-        --md-color: #fff;
-      }
+      color: #fff;
     }
   }
 
@@ -132,18 +135,29 @@ const deleteMessageById = (id: string) => {
     display: flex;
     flex-direction: column;
     max-width: 70%;
-
-    :deep(.md-editor) {
-      background-color: transparent;
-    }
-    :deep(.md-editor-code-head) {
-      z-index: 1000;
-    }
   }
 
   .msg-text {
     padding: 4px 16px;
     min-height: 20px;
+
+    :deep(.markstream-vue) {
+      color: inherit;
+      background: transparent;
+    }
+
+    :deep(.markstream-vue p:first-child) {
+      margin-top: 0;
+    }
+
+    :deep(.markstream-vue p:last-child) {
+      margin-bottom: 0;
+    }
+
+    :deep(.markstream-vue pre) {
+      max-width: 100%;
+      overflow-x: auto;
+    }
   }
 
   .msg-time {
