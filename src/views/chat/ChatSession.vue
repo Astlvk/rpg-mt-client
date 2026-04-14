@@ -26,7 +26,16 @@
             {{ dayjs(chat.lastMsgTime || chat.createdAt).format('YYYY-MM-DD HH:mm:ss') }}
           </div>
         </div>
-        <el-button type="danger" link :icon="Delete" @click.stop="handleDel(chat.id)" />
+        <div class="chat-item-actions">
+          <el-button
+            type="primary"
+            link
+            :icon="DocumentCopy"
+            title="复制会话（复用配置）"
+            @click.stop="handleDuplicateSession(chat)"
+          />
+          <el-button type="danger" link :icon="Delete" @click.stop="handleDel(chat.id)" />
+        </div>
       </div>
 
       <el-empty description="暂无会话" v-if="sessions?.length === 0" />
@@ -37,15 +46,22 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import dayjs from 'dayjs'
-import { Plus, ChatDotRound, Delete } from '@element-plus/icons-vue'
+import { Plus, ChatDotRound, Delete, DocumentCopy } from '@element-plus/icons-vue'
 import { useSession } from './service/useSession'
 
 onMounted(() => {
   init()
 })
 
-const { sessions, curSession, init, handleSelectSession, handleCreateSession, handleDel } =
-  useSession()
+const {
+  sessions,
+  curSession,
+  init,
+  handleSelectSession,
+  handleCreateSession,
+  handleDuplicateSession,
+  handleDel,
+} = useSession()
 </script>
 
 <style lang="postcss" scoped>
@@ -100,6 +116,12 @@ const { sessions, curSession, init, handleSelectSession, handleCreateSession, ha
 .chat-info {
   flex: 1;
   min-width: 0;
+}
+
+.chat-item-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
 }
 
 .chat-title {

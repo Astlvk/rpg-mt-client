@@ -1,5 +1,5 @@
 import type { Session } from '@/schema/chat'
-import { watch } from 'vue'
+import { toRaw, watch } from 'vue'
 import { addTenant, deleteTenant } from '@/api/base.api'
 import { getUUID } from '@/utils'
 import {
@@ -42,13 +42,86 @@ export function useSession() {
     setCurSession(session)
   }
 
+  /** 创建/复制会话中途失败时尽力清理，各步独立吞错，避免掩盖原始错误 */
+  async function rollbackNewSessionArtifacts(sessionId: string) {
+    try {
+      await deleteMessagesBySessionId(sessionId)
+    } catch (e) {
+      console.warn('[useSession] rollback: deleteMessages', sessionId, e)
+    }
+    try {
+      await deleteSession(sessionId)
+    } catch (e) {
+      console.warn('[useSession] rollback: deleteSession', sessionId, e)
+    }
+    try {
+      await deleteTenant(sessionId)
+    } catch (e) {
+      console.warn('[useSession] rollback: deleteTenant', sessionId, e)
+    }
+    if (curSession.value?.id === sessionId) {
+      setCurSession(null)
+    }
+  }
+
+  function cloneSessionConfig(config: Session['config']): Session['config'] {
+    const rawConfig = toRaw(config)
+
+    if (typeof structuredClone === 'function') {
+      try {
+        return structuredClone(rawConfig)
+      } catch (error) {
+        console.warn('[useSession] structuredClone failed, fallback to JSON clone', error)
+      }
+    }
+
+    return JSON.parse(JSON.stringify(rawConfig)) as Session['config']
+  }
+
+  // 复制会话：新会话复用原会话配置，无历史消息
+  async function handleDuplicateSession(source: Session) {
+    const loading = ElLoading.service({
+      text: '复制中...',
+    })
+    let newSessionId: string | undefined
+    try {
+      const newId = getUUID()
+      newSessionId = newId
+      const newSession: Session = {
+        id: newId,
+        title: `${source.title} 副本`,
+        avatar: source.avatar,
+        turn: 0,
+        config: cloneSessionConfig(source.config),
+        lastMsg: undefined,
+        lastMsgTime: Date.now(),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }
+      await addTenant(newId)
+      await addSession(newSession)
+      setCurSession(newSession)
+      await createFirstAiMsg()
+      ElMessage.success('已复制会话，可继续对话')
+    } catch (error) {
+      console.error(error)
+      ElMessage.error('复制会话失败')
+      if (newSessionId) {
+        await rollbackNewSessionArtifacts(newSessionId)
+      }
+    }
+    loading.close()
+  }
+
   // 创建会话
   async function handleCreateSession() {
     const loading = ElLoading.service({
       text: '创建中...',
     })
+    let newSessionId: string | undefined
     try {
       const newSession = buildNewSession()
+      newSessionId = newSession.id
       await addTenant(newSession.id)
       await addSession(newSession)
       setCurSession(newSession)
@@ -56,6 +129,9 @@ export function useSession() {
     } catch (error) {
       console.error(error)
       ElMessage.error('创建会话失败')
+      if (newSessionId) {
+        await rollbackNewSessionArtifacts(newSessionId)
+      }
     }
     loading.close()
   }
@@ -158,6 +234,7 @@ export function useSession() {
     init,
     handleSelectSession,
     handleCreateSession,
+    handleDuplicateSession,
     handleDel,
   }
 }
