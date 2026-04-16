@@ -64,6 +64,10 @@ async function chatWriter(messages: Message[]) {
           }
           const data = JSON.parse(ev.data)
           if (lastAiMsg.value) {
+            if (data.thinking) {
+              lastAiMsg.value.thinking = (lastAiMsg.value.thinking || '') + data.thinking
+              scrollToBottom()
+            }
             if (data.content) {
               lastAiMsg.value.content += data.content
               scrollToBottom()

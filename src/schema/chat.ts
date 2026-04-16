@@ -78,6 +78,7 @@ interface Message extends BaseEntity {
   turn: number // 当前对话轮次
   role: Role
   content: string // 文本（可选：分块/压缩）
+  thinking?: string // 模型思考过程（可选）
   docs?: queryInfo[] // 检索到的摘要
   usageMetadata?: UsageMetadata // 使用元数据
   loading?: boolean // 流式生成中：true；完成后：false

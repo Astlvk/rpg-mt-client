@@ -11,6 +11,23 @@
     </div>
 
     <div class="msg-content">
+      <div v-if="showThinkingBlock" class="msg-thinking">
+        <button type="button" class="thinking-toggle" @click="toggleThinking">
+          <span>{{ thinkingVisible ? '隐藏思考过程' : '查看思考过程' }}</span>
+          <span v-if="msg.loading" class="thinking-status">思考中...</span>
+        </button>
+
+        <div v-if="thinkingVisible" class="thinking-body">
+          <MarkdownRender
+            class="thinking-markdown"
+            :content="thinkingText"
+            :final="!msg.loading"
+            :typewriter="false"
+            custom-id="chat-thinking"
+          />
+        </div>
+      </div>
+
       <div class="msg-text">
         <MarkdownRender
           class="msg-markdown"
@@ -24,7 +41,7 @@
           <el-icon class="is-loading" size="16">
             <Loading />
           </el-icon>
-          <span>生成中...</span>
+          <span>{{ loadingText }}</span>
         </div>
       </div>
 
@@ -71,14 +88,14 @@
 </template>
 
 <script setup lang="ts">
-import { type PropType } from 'vue'
+import { computed, ref, type PropType, watch } from 'vue'
 import type { Message } from '@/schema/chat'
 import { Role } from '@/schema/enum'
 import dayjs from 'dayjs'
 import MarkdownRender from 'markstream-vue'
 import { User, Service, Loading, Delete, Memo, Histogram } from '@element-plus/icons-vue'
 
-defineProps({
+const props = defineProps({
   msg: {
     type: Object as PropType<Message>,
     required: true,
@@ -86,6 +103,29 @@ defineProps({
 })
 const emit = defineEmits(['memo', 'delete'])
 const aiMsgIdPrefix = 'firstAiMsg-'
+const thinkingVisible = ref(false)
+
+const thinkingText = computed(() => props.msg.thinking || '')
+
+const loadingText = computed(() => {
+  const hasThinking = Boolean(thinkingText.value.trim())
+  const hasContent = Boolean((props.msg.content || '').trim())
+  return hasThinking && !hasContent ? '思考中...' : '生成中...'
+})
+
+const showThinkingBlock = computed(
+  () => props.msg.role === Role.AI && Boolean(thinkingText.value.trim()),
+)
+
+watch(
+  showThinkingBlock,
+  (visible) => {
+    if (visible) {
+      thinkingVisible.value = true
+    }
+  },
+  { immediate: true },
+)
 
 const handleMemo = (msg: Message) => {
   emit('memo', msg)
@@ -93,6 +133,10 @@ const handleMemo = (msg: Message) => {
 
 const deleteMessageById = (id: string) => {
   emit('delete', id)
+}
+
+const toggleThinking = () => {
+  thinkingVisible.value = !thinkingVisible.value
 }
 </script>
 
@@ -135,6 +179,56 @@ const deleteMessageById = (id: string) => {
     display: flex;
     flex-direction: column;
     max-width: 70%;
+  }
+
+  .msg-thinking {
+    margin-bottom: 8px;
+    border: 1px solid #ebeef5;
+    border-radius: 14px;
+    background: #f7f8fa;
+    overflow: hidden;
+  }
+
+  .thinking-toggle {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: #606266;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .thinking-status {
+    color: #909399;
+  }
+
+  .thinking-body {
+    border-top: 1px solid #ebeef5;
+    padding: 0 14px 10px;
+    color: #606266;
+
+    :deep(.markstream-vue) {
+      color: inherit;
+      background: transparent;
+      font-size: 13px;
+    }
+
+    :deep(.markstream-vue p:first-child) {
+      margin-top: 10px;
+    }
+
+    :deep(.markstream-vue p:last-child) {
+      margin-bottom: 0;
+    }
+
+    :deep(.markstream-vue pre) {
+      max-width: 100%;
+      overflow-x: auto;
+    }
   }
 
   .msg-text {
@@ -184,6 +278,9 @@ const deleteMessageById = (id: string) => {
 @media (max-width: 600px) {
   .msg-item .msg-content {
     max-width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    margin-right: 0;
   }
   .msg-item .msg-avatar {
     display: none;

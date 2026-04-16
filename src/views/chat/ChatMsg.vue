@@ -123,10 +123,12 @@ onBeforeUnmount(() => {
   padding: 20px;
   overflow-y: auto;
   background-color: #fafafa;
+  overflow-anchor: none;
 }
 
 .chat-msg-content {
   min-height: 1px;
+  overflow-anchor: none;
 }
 
 .chat-msg::-webkit-scrollbar {

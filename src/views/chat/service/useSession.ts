@@ -207,6 +207,7 @@ export function useSession() {
         retrieverMode: RetrieverMode.SIMILARITY,
         retrieverCategory: [RetrieverCategory.SUMMARY],
         enableRetriever: true,
+        enableDeepThinkTool: false,
         enableSummary: true,
         updateSummary: false,
         searchMode: SearchMode.AGENT,
