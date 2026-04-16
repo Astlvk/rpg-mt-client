@@ -110,6 +110,7 @@ export function useSessionConfig() {
       retrieverMode: RetrieverMode.SIMILARITY,
       retrieverCategory: [RetrieverCategory.SUMMARY],
       enableRetriever: true,
+      enableDeepThinkTool: false,
       enableSummary: true,
       updateSummary: false,
       searchMode: SearchMode.FORCE,

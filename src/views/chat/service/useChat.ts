@@ -9,7 +9,7 @@ import {
   scrollToBottom,
   forceScrollToBottom,
 } from './workspace'
-import { buildAiMessage, addMessage } from '@/db/useMessagesRepo'
+import { buildAiMessage, addMessage, getMessagesByLimit } from '@/db/useMessagesRepo'
 import { updateSession } from '@/db/useSessionsRepo'
 import { ElMessage } from 'element-plus'
 
@@ -46,6 +46,8 @@ async function chatWriter(messages: Message[]) {
           distance: curSession.value.config.distance,
           top_k: curSession.value.config.topK,
           query_tool_prompt: curSession.value.config.queryToolPrompt,
+          // 工具相关
+          enable_deep_think_tool: curSession.value.config.enableDeepThinkTool,
         }),
         async onopen(response) {
           console.log('open', response)
@@ -85,7 +87,11 @@ async function chatWriter(messages: Message[]) {
           try {
             // 持久化最后一条ai消息，并更新session轮次、最后消息时间
             await addLastAiMsgToDb(lastAiMsg)
-            await summary(messages)
+            const latestMessages = await getMessagesByLimit(
+              curSession.value!.id,
+              curSession.value!.config.history,
+            )
+            await summary(latestMessages.reverse())
           } catch (error) {
             console.error(error)
             ElMessage.error('持久化或摘要失败，详情请查看控制台输出')

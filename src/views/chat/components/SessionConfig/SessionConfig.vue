@@ -30,6 +30,10 @@
             <el-form-item label="当前回合" prop="turn">
               <el-input-number v-model="form.turn" :min="0" />
             </el-form-item>
+
+            <el-form-item label="开启思考工具" prop="config.enableDeepThinkTool">
+              <el-switch v-model="form.config.enableDeepThinkTool" />
+            </el-form-item>
           </el-collapse-item>
 
           <el-collapse-item title="模型设置" name="model">

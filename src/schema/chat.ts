@@ -40,6 +40,7 @@ interface SessionConfig {
   retrieverMode: RetrieverMode // 召回方式
   retrieverCategory: RetrieverCategory[] // 召回类别
   enableRetriever: boolean // 启用召回
+  enableDeepThinkTool: boolean // 启用深度思考工具
   enableSummary: boolean // 启用摘要
   updateSummary: boolean // 更新摘要
   searchMode: SearchMode // 检索方式，强制检索，agent检索
