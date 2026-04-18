@@ -14,7 +14,7 @@
       <div v-if="showThinkingBlock" class="msg-thinking">
         <button type="button" class="thinking-toggle" @click="toggleThinking">
           <span>{{ thinkingVisible ? '隐藏思考过程' : '查看思考过程' }}</span>
-          <span v-if="msg.loading" class="thinking-status">思考中...</span>
+          <span v-if="streamingThinkingOnly" class="thinking-status">思考中...</span>
         </button>
 
         <div v-if="thinkingVisible" class="thinking-body">
@@ -104,6 +104,8 @@ const props = defineProps({
 const emit = defineEmits(['memo', 'delete'])
 const aiMsgIdPrefix = 'firstAiMsg-'
 const thinkingVisible = ref(false)
+/** 用户手动切换展开/收起后，不再用自动逻辑覆盖，直至换一条消息 */
+const thinkingUserLock = ref(false)
 
 const thinkingText = computed(() => props.msg.thinking || '')
 
@@ -117,12 +119,42 @@ const showThinkingBlock = computed(
   () => props.msg.role === Role.AI && Boolean(thinkingText.value.trim()),
 )
 
+/** 流式阶段且仅有思考、尚无正文（与自动展开/收起条件一致） */
+const streamingThinkingOnly = computed(
+  () =>
+    Boolean(
+      props.msg.loading &&
+        thinkingText.value.trim() &&
+        !(props.msg.content || '').trim(),
+    ),
+)
+
 watch(
-  showThinkingBlock,
-  (visible) => {
-    if (visible) {
-      thinkingVisible.value = true
+  () => props.msg.id,
+  () => {
+    thinkingUserLock.value = false
+    thinkingVisible.value = false
+  },
+)
+
+watch(
+  () => ({
+    role: props.msg.role,
+    loading: props.msg.loading,
+    content: (props.msg.content || '').trim(),
+    thinking: thinkingText.value.trim(),
+    showBlock: showThinkingBlock.value,
+  }),
+  (s) => {
+    if (thinkingUserLock.value) {
+      return
     }
+    if (!s.showBlock) {
+      thinkingVisible.value = false
+      return
+    }
+    const streamingThinkingOnly = Boolean(s.loading && s.thinking && !s.content)
+    thinkingVisible.value = streamingThinkingOnly
   },
   { immediate: true },
 )
@@ -136,6 +168,7 @@ const deleteMessageById = (id: string) => {
 }
 
 const toggleThinking = () => {
+  thinkingUserLock.value = true
   thinkingVisible.value = !thinkingVisible.value
 }
 </script>
