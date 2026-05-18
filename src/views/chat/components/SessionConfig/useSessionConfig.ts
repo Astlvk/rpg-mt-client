@@ -1,8 +1,7 @@
 import type { ModelConfigType, SessionForm } from '@/schema/chat'
 import { ref, reactive, toRaw } from 'vue'
 import {
-  ZhipuAIModel,
-  GeminiModel,
+  OpenAIModel,
   DeepSeekModel,
   RetrieverMode,
   RetrieverCategory,
@@ -25,33 +24,21 @@ export function useSessionConfig() {
 
   const modelOptions = [
     {
-      label: 'qwen',
-      options: [{ label: 'q4_k_m.gguf', value: 'q4_k_m.gguf' }],
-    },
-    {
-      label: 'gemini',
+      label: 'openai',
       options: [
-        { label: 'Gemini-2.5-Flash', value: GeminiModel.GEMINI_25_FLASH },
-        { label: 'Gemini-2.5-Flash-Lite', value: GeminiModel.GEMINI_25_FLASH_LITE },
-        { label: 'Gemini-2.5-Pro', value: GeminiModel.GEMINI_25_PRO },
+        { label: 'GPT-5', value: OpenAIModel.GPT5 },
+        { label: 'GPT-5 Mini', value: OpenAIModel.GPT5_MINI },
+        { label: 'GPT-5 Nano', value: OpenAIModel.GPT5_NANO },
+        { label: 'GPT-4.1', value: OpenAIModel.GPT41 },
+        { label: 'GPT-4.1 Mini', value: OpenAIModel.GPT41_MINI },
+        { label: 'GPT-4.1 Nano', value: OpenAIModel.GPT41_NANO },
       ],
     },
     {
       label: 'deepseek',
       options: [
-        { label: 'DeepSeek-Chat', value: DeepSeekModel.DEEPSEEK_CHAT },
-        { label: 'DeepSeek-Reasoner', value: DeepSeekModel.DEEPSEEK_REASONER },
-      ],
-    },
-    {
-      label: 'glm',
-      options: [
-        { label: 'GLM-4.5V', value: ZhipuAIModel.GLM45V },
-        { label: 'GLM-4.5', value: ZhipuAIModel.GLM45 },
-        { label: 'GLM-4.5X', value: ZhipuAIModel.GLM45X },
-        { label: 'GLM-4.5 Air', value: ZhipuAIModel.GLM45AIR },
-        { label: 'GLM-4.5 AirX', value: ZhipuAIModel.GLM45AIRX },
-        { label: 'GLM-4.5 Flash', value: ZhipuAIModel.GLM45FLASH },
+        { label: 'DeepSeek V4 Flash', value: DeepSeekModel.DEEPSEEK_V4_FLASH },
+        { label: 'DeepSeek V4 Pro', value: DeepSeekModel.DEEPSEEK_V4_PRO },
       ],
     },
   ]

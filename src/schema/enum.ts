@@ -1,27 +1,15 @@
-enum Model {
-  GPT35T = 'gpt-3.5-turbo',
-  GPT35T1106 = 'gpt-3.5-turbo-1106',
-  GPT4T = 'gpt-4-1106-preview',
-}
-
-enum ZhipuAIModel {
-  GLM45V = 'glm-4.5v',
-  GLM45 = 'glm-4.5',
-  GLM45X = 'glm-4.5-x',
-  GLM45AIR = 'glm-4.5-air',
-  GLM45AIRX = 'glm-4.5-airx',
-  GLM45FLASH = 'glm-4.5-flash',
+enum OpenAIModel {
+  GPT5 = 'gpt-5',
+  GPT5_MINI = 'gpt-5-mini',
+  GPT5_NANO = 'gpt-5-nano',
+  GPT41 = 'gpt-4.1',
+  GPT41_MINI = 'gpt-4.1-mini',
+  GPT41_NANO = 'gpt-4.1-nano',
 }
 
 enum DeepSeekModel {
-  DEEPSEEK_CHAT = 'deepseek-chat',
-  DEEPSEEK_REASONER = 'deepseek-reasoner',
-}
-
-enum GeminiModel {
-  GEMINI_25_FLASH = 'gemini-2.5-flash',
-  GEMINI_25_FLASH_LITE = 'gemini-2.5-flash-lite',
-  GEMINI_25_PRO = 'gemini-2.5-pro',
+  DEEPSEEK_V4_FLASH = 'deepseek-v4-flash',
+  DEEPSEEK_V4_PRO = 'deepseek-v4-pro',
 }
 
 enum Role {
@@ -58,10 +46,8 @@ enum SummaryType {
 }
 
 export {
-  Model,
-  ZhipuAIModel,
+  OpenAIModel,
   DeepSeekModel,
-  GeminiModel,
   Role,
   RetrieverMode,
   RetrieverCategory,

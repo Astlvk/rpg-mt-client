@@ -48,7 +48,7 @@
             <el-form-item label="Base URL" :prop="`config.baseUrl`">
               <el-input
                 v-model="form.config.baseUrl"
-                placeholder="模型服务商Base URL（openai对齐）"
+                placeholder="OpenAI: https://api.openai.com/v1 或 DeepSeek: https://api.deepseek.com"
               />
             </el-form-item>
 
